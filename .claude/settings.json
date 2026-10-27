@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mediawiki read:*)",
+      "Bash(mediawiki version)",
+      "Bash(python3 scripts/validate_skills.py)",
+      "Bash(python3 skills/recherche/scripts/search.py:*)",
+      "Bash(pdftotext:*)",
+      "Bash(pdfinfo:*)",
+      "Bash(shellcheck:*)"
+    ],
+    "ask": [
+      "Bash(mediawiki write:*)",
+      "Bash(mediawiki upload:*)",
+      "Bash(mediawiki rename:*)",
+      "Bash(mediawiki delete:*)"
+    ]
+  }
+}

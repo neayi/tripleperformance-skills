@@ -1,0 +1,12 @@
+{
+  "name": "triple-performance",
+  "version": "0.1.0",
+  "description": "Skills pour rédiger, traduire et enrichir des articles sur Triple Performance, le wiki de l'agroécologie.",
+  "author": {
+    "name": "Neayi",
+    "url": "https://neayi.com"
+  },
+  "homepage": "https://tripleperformance.fr",
+  "repository": "https://github.com/neayi/tripleperformance-skills",
+  "keywords": ["mediawiki", "agroécologie", "wiki", "triple-performance"]
+}

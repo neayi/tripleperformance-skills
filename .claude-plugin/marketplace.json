@@ -1,0 +1,14 @@
+{
+  "name": "triple-performance",
+  "owner": {
+    "name": "Neayi",
+    "url": "https://neayi.com"
+  },
+  "plugins": [
+    {
+      "name": "triple-performance",
+      "source": "./",
+      "description": "Skills pour rédiger, traduire et enrichir des articles sur Triple Performance."
+    }
+  ]
+}
