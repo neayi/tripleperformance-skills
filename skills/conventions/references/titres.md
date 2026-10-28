@@ -6,7 +6,7 @@ Les pages existantes ne respectent pas toujours ces règles (beaucoup de retours
 
 | Type de page | Modèle(s) | Forme du titre | Exemples |
 |---|---|---|---|
-| Retour d'expérience | `Exemple de mise en œuvre`, `Exemple de mise en œuvre et portrait de ferme` | Nom d'action (nominalisation), spécifique | « Mise en place d'une serre en aquaponie de 1600 m² dans le Gers » |
+| Retour d'expérience | `Exemple de mise en œuvre` | Nom d'action (nominalisation), spécifique | « Mise en place d'une serre en aquaponie de 1600 m² dans le Gers » |
 | Portrait de ferme | `Portrait de ferme` | Nom de la ferme | « EARL Besnard », « GAEC BioTaupes » |
 | Fiche technique | `Pratique` | Verbe à l'infinitif | « Mettre en place un distributeur automatique à la ferme », « Autoconstruire un semoir à dent » |
 | Concept | `Culture`, `Arbre`, `Bioagresseur`, `Auxiliaire`, `Accident climatique et physiologique`, `Matériel`, `Outil d'aide`, `Intrant`, `Label`, `Fonction service stratégie`, `MFSC` | Nom le plus précis, au singulier, sans article | « Blé », « Bruche du pois », « Méthode MERCI » |
