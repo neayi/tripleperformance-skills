@@ -10,6 +10,7 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ### Ajouté
 
+- `images` : diagnostic et correction des photos affichées couchées (balise EXIF `Orientation` conservée dans les miniatures du wiki).
 - `conventions` : après LinkTitles, proposer `__NOAUTOLINKTARGET__` sur les pages cibles homonymes (vérifiable via `prop=pageprops`).
 - `video-youtube` : le champ `Programme` prend le titre exact de la page du projet (`NBSOIL Knowledge Marketplace`, pas la redirection `NBSOIL`).
 - `nouvel-article/references/modeles.md` : formulaire associé et pièges de chaque modèle de `Catégorie:Modèles de catégories` ; les paramètres se lisent dans la TemplateData du modèle (API `action=templatedata`).

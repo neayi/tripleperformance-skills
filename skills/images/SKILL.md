@@ -59,6 +59,7 @@ magick source.png -strip "tp-travail/<sujet>/images/Nom explicite.png"
 - `-strip` retire les données EXIF, dont la géolocalisation des photos.
 - Une photo avec transparence (détourage) reste en PNG ; réduis-la tout de même à 1000 px de large.
 - Indique à l'utilisateur le gain obtenu (poids avant et après).
+- `-auto-orient -strip` est indispensable pour les photos de téléphone : le wiki pivote les miniatures mais y laisse la balise EXIF `Orientation`, et le navigateur les pivote une seconde fois. Une image déjà en ligne qui s'affiche couchée ou déformée (API `prop=imageinfo&iiprop=metadata` : `Orientation` ≠ 1) se corrige en téléversant une nouvelle version traitée ainsi, sous le même nom (`--ignore-warnings`), puis en purgeant la page (`action=purge`).
 
 ## 4. Image d'illustration du modèle
 
