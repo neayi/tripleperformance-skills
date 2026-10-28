@@ -22,6 +22,8 @@ Paragraphe. Une ligne vide sépare deux paragraphes.
 
 ## Liens
 
+Les liens internes vers les articles ne s'écrivent pas à la main : LinkTitles les ajoute après publication (voir `conventions`, règles de publication). La syntaxe ci-dessous sert pour les liens structurels ou demandés par l'utilisateur.
+
 ```
 [[Couverts végétaux]]                       lien interne
 [[Couverts végétaux|couverts]]              lien interne avec texte

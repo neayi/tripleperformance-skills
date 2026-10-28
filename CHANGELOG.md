@@ -4,6 +4,10 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ## Non publié
 
+### Modifié
+
+- Les skills n'écrivent plus de liens internes elles-mêmes : après publication, elles appellent l'API `linktitles` (extension LinkTitles) via `mediawiki api`, puis montrent les liens ajoutés (`diff -u`). Nouvelle étape 9 des règles de publication dans `conventions`.
+
 ### Ajouté
 
 - Skill `video-youtube` : import d'une vidéo YouTube (modèle Vidéo, vignette `thumbnail_youtube_<id>.jpg`, transcription brute, article mis en forme), avec le script `youtube.py`, qui vérifie d'abord par Semantic MediaWiki (`A une URL de vidéo`) que la vidéo n'est pas déjà sur le wiki.

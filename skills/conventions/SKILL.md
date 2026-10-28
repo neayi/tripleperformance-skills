@@ -67,7 +67,7 @@ Pour lire ou produire un fichier Excel (`.xlsx`), utilise le module `openpyxl`, 
 - Un article commence par l'appel d'un modèle de page (`{{Pratique ...}}`, `{{Portrait de ferme ...}}`, `{{Culture ...}}`…) dont les paramètres alimentent Semantic MediaWiki ; ce modèle pose aussi les catégories. Les modèles disponibles sont listés dans `Catégorie:Modèles de catégories`.
 - Le corps est en wikitext : titres `==`, listes `*`, liens internes `[[Titre]]` ou `[[Titre|texte]]`, références `<ref>...</ref>` puis `{{Références}}` ou `<references />` en fin de page.
 - Les graphiques utilisent l'extension ECharts : voir la skill `graphique-depuis-image`.
-- Ajoute des liens internes vers les pages existantes du wiki plutôt que des liens externes. Vérifie tous les titres visés en une fois avec `search.py --exists "Titre 1" "Titre 2" ...` (skill `recherche`). Une redirection est une cible valide, mais pointe plutôt vers la page finale avec un texte affiché : `[[Sous-soleuse|décompacteur]]`.
+- **N'ajoute pas toi-même de liens internes** vers les articles du wiki : une fois la page en ligne, l'extension LinkTitles les pose automatiquement (étape 9 des règles de publication). Restent écrits à la main seulement les liens qui font partie de la structure : liens interlangues, images (`[[Fichier:...]]`), catégories, et ceux que l'utilisateur demande explicitement. Vérifie ces titres en une fois avec `search.py --exists "Titre 1" "Titre 2" ...` (skill `recherche`).
 - Les liens interlangues se placent en fin de page, un par langue : `[[en:STIR]]`. Ils sont réciproques (la page anglaise porte `[[fr:...]]`) et peuvent viser une redirection. Voir la skill `traduction`.
 
 Pour le détail des éléments de mise en page, voir [references/wikitext.md](references/wikitext.md).
@@ -88,6 +88,15 @@ Pour le détail des éléments de mise en page, voir [references/wikitext.md](re
 6. **Jamais de suppression ni de renommage** sans demande explicite de l'utilisateur.
 7. **Images** : vérifie que le fichier n'existe pas déjà (`mediawiki read <base>/wiki/Fichier:Nom.jpg`), mentionne la source et la licence dans la description, et demande à l'utilisateur s'il a le droit de publier l'image.
 8. Après publication, donne l'URL de la page à l'utilisateur.
+9. **Liens internes automatiques.** Juste après avoir publié un article (création ou modification), fais poser les liens par LinkTitles, présent sur tous les wikis Triple Performance. Annonce cette étape au moment de la validation (étape 4) : l'accord donné pour publier la couvre.
+
+   ```bash
+   mediawiki api "<base>/api.php?action=linktitles&page=<Titre_avec_underscores>"
+   mediawiki read "<base>/wiki/<Titre_avec_underscores>" > tp-travail/<sujet>/apres-liens.wiki
+   diff -u tp-travail/<sujet>/page.wiki tp-travail/<sujet>/apres-liens.wiki
+   ```
+
+   La CLI se charge du jeton et du POST ; l'utilisateur doit être connecté. Montre les liens ajoutés à l'utilisateur. Si l'un d'eux est hors sujet (homonyme, lien dans une citation), propose de le retirer : c'est une nouvelle modification, à faire valider comme les autres.
 
 ## Améliorer cette skill
 

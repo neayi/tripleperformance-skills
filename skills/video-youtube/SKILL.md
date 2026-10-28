@@ -102,7 +102,7 @@ Après la transcription, écris le corps de l'article à partir de la transcript
 - Corrige les erreurs de reconnaissance vocale, en particulier les noms propres (personnes, organismes, lieux, produits) à l'aide du titre et de la description (« reddox » → « redox », « wageningen » → « Wageningen »). Si un passage reste incompréhensible, ne l'invente pas : signale-le à l'utilisateur.
 - Les dialogues et questions du public peuvent être rendus en « Question : … » / réponse, ou en citations en italique entre guillemets pour les phrases marquantes.
 - Listes à puces pour les énumérations, tableaux wiki si l'intervenant présente des données comparées.
-- Ajoute des liens internes vers les pages existantes (vérifiées en une fois avec `search.py --exists`), à la première occurrence seulement.
+- N'écris pas de liens internes : ils sont ajoutés après publication par LinkTitles (étape 7).
 
 **Titres** : commence au niveau 2 (`== Titre ==`), puis `===` pour les sous-parties. Casse française : majuscule au premier mot seulement (et aux noms propres) — `== Le fonctionnement redox des sols ==`, jamais `== Le Fonctionnement Redox Des Sols ==`. Si la vidéo a des chapitres, ils donnent le plan de premier niveau.
 
@@ -147,7 +147,15 @@ Puis prévisualise `page.wiki` avec `preview.py` (skill `conventions`) et montre
    mediawiki write "https://wiki.tripleperformance.fr/wiki/<Titre>" tp-travail/youtube-<id>/page.wiki --summary "Import de la vidéo YouTube <id> : fiche, transcription et article"
    ```
 
-3. Donne l'URL de la page.
+3. **Liens internes.** Fais-les poser par LinkTitles, puis montre à l'utilisateur ceux qui ont été ajoutés (étape 9 des règles de publication de `conventions`) :
+
+   ```bash
+   mediawiki api "https://wiki.tripleperformance.fr/api.php?action=linktitles&page=<Titre_avec_underscores>"
+   mediawiki read "https://wiki.tripleperformance.fr/wiki/<Titre_avec_underscores>" > tp-travail/youtube-<id>/apres-liens.wiki
+   diff -u tp-travail/youtube-<id>/page.wiki tp-travail/youtube-<id>/apres-liens.wiki
+   ```
+
+4. Donne l'URL de la page.
 
 ## À enrichir
 

@@ -1,6 +1,6 @@
 ---
 name: traduction
-description: Traduit une page de Triple Performance d'une version linguistique du wiki vers une autre (par exemple de wiki.tripleperformance.fr vers en.tripleperformance.ag), en adaptant les modèles, liens internes, catégories et noms de fichiers. À utiliser quand l'utilisateur veut traduire, porter ou publier une page dans une autre langue.
+description: Traduit une page de Triple Performance d'une version linguistique du wiki vers une autre (par exemple de wiki.tripleperformance.fr vers en.tripleperformance.ag), en adaptant les modèles, catégories et noms de fichiers. À utiliser quand l'utilisateur veut traduire, porter ou publier une page dans une autre langue.
 ---
 
 # Traduire une page entre deux wikis
@@ -20,7 +20,7 @@ Applique les règles de la skill `conventions`.
 3. **Inventorie ce qui ne se traduit pas mot à mot :**
    - **Modèle de page et noms de paramètres** : sur les wikis non francophones, les **noms de paramètres restent en français** et seules les valeurs sont traduites (ex. sur en.tripleperformance.ag : `|Type de production=Field crops`, `|Mots-clés=Cover crops, ...`). Vérifie toujours sur un article exemple du wiki cible (`search.py --template <Nom> --lang <cible>` puis `mediawiki read`).
    - **Valeurs de paramètres sémantiques** (type de production, objectif…) : utilise les valeurs existantes sur le wiki cible.
-   - **Liens internes** : pour chaque `[[Page]]`, cherche la page équivalente sur le wiki cible. Les liens interlangues des pages liées donnent souvent la réponse directement (`search.py --langlinks "Page 1" "Page 2" ...` sur le wiki source) ; vérifie ensuite tous les titres retenus avec `search.py --exists --lang <cible> ...`. Si une page n'a pas d'équivalent, garde le texte sans lien ou signale-le à l'utilisateur.
+   - **Liens internes** : ne les transpose pas. Remplace chaque `[[Page]]` ou `[[Page|texte]]` de la source par son texte traduit, sans lien : LinkTitles posera les liens vers les pages du wiki cible après publication (voir `conventions`). Seuls les liens structurels (images, catégories, interlangues) sont adaptés à la main.
    - **Liens interlangues existants** : retire de la traduction la ligne `[[<cible>:...]]` de la source (une page ne pointe pas vers sa propre langue) ; les autres (`[[de:...]]`…) peuvent être conservées.
    - **Fichiers** : les images sont-elles disponibles sur le wiki cible ? Sinon, liste-les pour téléversement (avec accord).
    - **Espaces de noms** : `Catégorie:` → `Category:`, `Fichier:` → `File:`, etc.
@@ -31,9 +31,9 @@ Applique les règles de la skill `conventions`.
    - conserve chiffres, unités et références ; adapte seulement le format des nombres (virgule/point décimal) ;
    - noms propres (fermes, organismes, programmes) non traduits.
 
-5. **Rapport à l'utilisateur** : liens sans équivalent, images manquantes, termes incertains.
+5. **Rapport à l'utilisateur** : images manquantes, termes incertains.
 
-6. **Validation et publication** sur le wiki cible selon `conventions` (l'utilisateur doit être connecté à ce wiki : `mediawiki login https://<cible>.tripleperformance.ag`).
+6. **Validation et publication** sur le wiki cible selon `conventions`, ajout des liens par LinkTitles compris (l'utilisateur doit être connecté à ce wiki : `mediawiki login https://<cible>.tripleperformance.ag`).
 
 7. **Relie les deux versions** par des liens interlangues réciproques, placés en fin de page :
    - dans la traduction, avant publication : `[[<langue source>:<Titre source>]]` (ex. `[[fr:Soil Tillage Intensity Rating (STIR)]]`) ;

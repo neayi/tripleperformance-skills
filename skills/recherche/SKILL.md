@@ -23,7 +23,7 @@ python3 <dossier-de-la-skill>/scripts/search.py --langlinks "Soil Tillage Intens
 
 Options : `--limit N` (défaut 10), `--namespace 0|14` (articles et catégories), `--json`.
 
-- `--exists` vérifie en une seule requête l'existence d'une liste de titres (par lots de 50) et indique les redirections (`OK  Décompacteur → Sous-soleuse (redirection)`). À utiliser pour valider **tous** les liens internes d'un texte avant publication : un lien vers une page absente apparaît en rouge sur le wiki.
+- `--exists` vérifie en une seule requête l'existence d'une liste de titres (par lots de 50) et indique les redirections (`OK  Décompacteur → Sous-soleuse (redirection)`). À utiliser pour valider les titres écrits à la main (modèles, fichiers, liens interlangues, liens demandés par l'utilisateur) : un lien vers une page absente apparaît en rouge sur le wiki. Les liens internes ordinaires sont posés par LinkTitles après publication (voir `conventions`).
 - `--langlinks` liste les liens interlangues (`[[en:...]]`) d'une ou plusieurs pages, c'est-à-dire leurs équivalents dans les autres langues.
 
 ## Déroulé
@@ -33,7 +33,7 @@ Options : `--limit N` (défaut 10), `--namespace 0|14` (articles et catégories)
 3. **Ouvre les pages les plus pertinentes** avec `mediawiki read <url>` (ou seulement le début, `| head -60`) pour vérifier leur contenu réel : un titre proche ne garantit pas le même sujet.
 4. **Restitue** à l'utilisateur :
    - les pages qui traitent déjà du sujet (titre, URL, une phrase sur leur contenu) ;
-   - les pages voisines utiles pour des liens internes ;
+   - les pages voisines sur des sujets proches ;
    - une conclusion claire : le sujet est-il déjà couvert, partiellement couvert, ou absent ?
 5. Si l'utilisateur veut ensuite créer ou compléter une page, enchaîne avec la skill `nouvel-article` ou `article-depuis-pdf`.
 

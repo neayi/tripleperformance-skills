@@ -33,7 +33,8 @@ Applique les règles de la skill `conventions`.
 5. **Rédige le wikitext** dans `tp-travail/<sujet>/<Titre>.wiki` :
    - appel du modèle en tête, avec les champs du formulaire, une ligne par champ (`| Champ = valeur`) ; les valeurs multiples suivent le séparateur indiqué par le formulaire (souvent `,`) ;
    - plan inspiré des articles exemples ;
-   - liens internes vers les pages existantes (vérifiées), références en `<ref>` ;
+   - pas de liens internes : ils sont ajoutés par LinkTitles une fois la page en ligne (voir `conventions`)
+   - Utilise `<ref>` pour les références, en précisant l'url de la page ou du PDF, le nom de l'auteur et la date si possible.
    - ton : clair, factuel, orienté agriculteurs ; citations d'agriculteurs entre guillemets et en italique si c'est l'usage dans les exemples.
 
 6. **Fais valider puis publie** selon les règles de publication de `conventions` :
@@ -41,6 +42,8 @@ Applique les règles de la skill `conventions`.
    ```bash
    mediawiki write "https://wiki.tripleperformance.fr/wiki/<Titre>" tp-travail/<sujet>/<Titre>.wiki --summary "Création de la page <Titre>"
    ```
+
+   puis ajoute les liens internes avec LinkTitles (étape 9 des règles de publication).
 
 7. Si l'article prévoit une image (champ `Image`, `Bannière`…), prépare-la et téléverse-la selon `conventions`, après accord.
 

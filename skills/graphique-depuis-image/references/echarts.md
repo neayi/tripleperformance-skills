@@ -15,7 +15,7 @@ Extension : [mw-echarts](https://github.com/neayi/mw-echarts) ([page MediaWiki](
 
 - `width` : en `%` ou `px` ; `height` : en `px`.
 - `option` : objet d'options ECharts. Du JSON strict est recommandé ; des pages existantes utilisent aussi des fonctions JavaScript (ex. `formatter`), à n'employer que si nécessaire.
-- Dans les valeurs texte, on peut mettre des liens wiki : `"name":"[[Blé]] d'hiver"` (rendu en lien dans les étiquettes), comme sur la page *Ferme des Pâtures*.
+- Les valeurs texte acceptent des liens wiki : `"name":"[[Blé]] d'hiver"` (rendu en lien dans les étiquettes), comme sur la page *Ferme des Pâtures*. N'en ajoute que si l'utilisateur le demande : les liens internes sont normalement posés par LinkTitles (voir `conventions`).
 
 ## Caractères à éviter dans le JSON
 
