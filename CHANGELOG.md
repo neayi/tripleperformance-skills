@@ -6,6 +6,8 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ### Ajouté
 
+- Skill `video-youtube` : import d'une vidéo YouTube (modèle Vidéo, vignette `thumbnail_youtube_<id>.jpg`, transcription brute, article mis en forme), avec le script `youtube.py`, qui vérifie d'abord par Semantic MediaWiki (`A une URL de vidéo`) que la vidéo n'est pas déjà sur le wiki.
+- yt-dlp et Deno ajoutés aux outils installés (exécutable officiel de yt-dlp sous Linux, Homebrew sur macOS, winget sous Windows).
 - `search.py --exists` : vérifie en une requête l'existence d'une liste de titres, redirections comprises.
 - `search.py --langlinks` : liste les liens interlangues d'une ou plusieurs pages.
 - Skill `traduction` : liaison réciproque des versions par liens interlangues (`[[en:...]]` / `[[fr:...]]`).

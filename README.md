@@ -15,6 +15,7 @@ Les skills s'appuient sur des outils en ligne de commande : la CLI [`mediawiki`]
 | `traduction` | Traduit une page d'une version linguistique du wiki vers une autre. | « Traduis la page Ferme des Pâtures en anglais. » |
 | `tableau-depuis-image` | Convertit une image de tableau en tableau wiki natif. | « Transforme cette capture de tableau en tableau wiki. » |
 | `graphique-depuis-image` | Convertit une image de graphique en graphique natif ECharts. | « Refais ce graphique en ECharts. » |
+| `video-youtube` | Importe une vidéo YouTube : fiche Vidéo, vignette, transcription et article mis en forme. | « Importe cette vidéo : https://www.youtube.com/watch?v=KZ5Tz3IGoSI » |
 
 Les skills se déclenchent automatiquement quand votre demande correspond à leur description. Vous pouvez aussi les appeler explicitement, par exemple `/triple-performance:recherche`.
 
@@ -57,6 +58,8 @@ Outils installés :
 | jq | `jq` | Manipuler le JSON des API |
 | Python 3 | `python3` | Scripts d'assistance des skills (bibliothèque standard uniquement) |
 | openpyxl | module Python | Lire et écrire les fichiers Excel (`.xlsx`) fournis par les contributeurs |
+| yt-dlp | `yt-dlp` | Récupérer titre, description, vignette et transcription des vidéos YouTube |
+| Deno | `deno` | Moteur JavaScript dont yt-dlp a besoin pour YouTube |
 | curl, git | `curl`, `git` | Appels API, mise à jour du dépôt |
 
 ### 2. Se connecter au wiki

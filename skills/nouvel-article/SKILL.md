@@ -17,7 +17,7 @@ Applique les règles de la skill `conventions`.
    python3 <dossier-skill-recherche>/scripts/search.py --category "Modèles de catégories" --limit 50
    ```
 
-   Propose le plus adapté à l'utilisateur et fais-le confirmer s'il y a un doute (ex. « Pratique » vs « Exemple de mise en œuvre »).
+   Propose le plus adapté à l'utilisateur et fais-le confirmer s'il y a un doute (ex. « Pratique » vs « Exemple de mise en œuvre »). Pour une vidéo YouTube, utilise plutôt la skill `video-youtube`.
 
 3. **Récupère la structure attendue** dans `tp-travail/<sujet>/` :
    - le formulaire Page Forms, qui liste les champs et leurs valeurs possibles : `mediawiki read https://wiki.tripleperformance.fr/wiki/Formulaire:<Modèle>` (s'il contient `#REDIRECTION [[...]]`, lis la cible) ;

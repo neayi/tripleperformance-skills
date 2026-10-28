@@ -3,7 +3,7 @@
     Installe les outils utilisés par les skills Triple Performance sous Windows.
 
 .DESCRIPTION
-    Utilise winget pour ImageMagick, Pandoc, Poppler, jq, Python et Git,
+    Utilise winget pour ImageMagick, Pandoc, Poppler, jq, Python, yt-dlp, Deno et Git,
     et l'installeur officiel pour la CLI mediawiki.
 
 .PARAMETER Check
@@ -34,6 +34,8 @@ $Tools = @(
     @{ Key = 'jq';          Commands = @('jq');                 WingetId = 'jqlang.jq';                Label = 'jq (JSON)' }
     @{ Key = 'python';      Commands = @('python3', 'python', 'py'); WingetId = 'Python.Python.3.12';  Label = 'Python 3 (scripts des skills)' }
     @{ Key = 'openpyxl';    Module = 'openpyxl';                WingetId = $null;                      Label = 'openpyxl (lecture et écriture des fichiers Excel)' }
+    @{ Key = 'ytdlp';       Commands = @('yt-dlp');             WingetId = 'yt-dlp.yt-dlp';            Label = 'yt-dlp (vidéos YouTube : métadonnées, vignette, transcription)' }
+    @{ Key = 'deno';        Commands = @('deno');               WingetId = 'DenoLand.Deno';            Label = 'Deno (moteur JavaScript requis par yt-dlp pour YouTube)' }
     @{ Key = 'git';         Commands = @('git');                WingetId = 'Git.Git';                  Label = 'git (et Git Bash, utilisé par Claude Code)' }
 )
 

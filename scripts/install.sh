@@ -23,6 +23,10 @@ for arg in "$@"; do
 done
 
 MEDIAWIKI_INSTALLER="https://raw.githubusercontent.com/neayi/Mediawiki-LLM-Cli/main/install.sh"
+# Les paquets yt-dlp des distributions sont souvent trop anciens pour YouTube :
+# on installe l'exécutable officiel, qui se met à jour avec `yt-dlp -U`.
+YTDLP_URL="https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp"
+DENO_INSTALLER="https://deno.land/install.sh"
 
 if [ -t 1 ]; then
   GREEN=$'\033[32m'; RED=$'\033[31m'; YELLOW=$'\033[33m'; RESET=$'\033[0m'
@@ -79,6 +83,8 @@ TOOLS=(
   "jq|jq|jq (JSON)"
   "python|python3|Python 3 (scripts des skills)"
   "openpyxl|py:openpyxl|openpyxl (lecture et écriture des fichiers Excel)"
+  "ytdlp|yt-dlp|yt-dlp (vidéos YouTube : métadonnées, vignette, transcription)"
+  "deno|deno|Deno (moteur JavaScript requis par yt-dlp pour YouTube)"
   "curl|curl|curl (appels API)"
   "git|git|git"
 )
@@ -101,6 +107,7 @@ package_name() {
     zypper:poppler)     echo poppler-tools ;;
     zypper:python)      echo python3 ;;
     brew:python)        echo python ;;
+    brew:ytdlp)         echo yt-dlp ;;
     *:*)                echo "$tool" ;;
   esac
 }
@@ -190,9 +197,16 @@ pip_install() {
 PACKAGES=()
 PIP_MODULES=()
 NEED_MEDIAWIKI=0
+NEED_YTDLP=0
+NEED_DENO=0
 for key in "${MISSING[@]}"; do
   if [ "$key" = "mediawiki" ]; then
     NEED_MEDIAWIKI=1
+  elif [ "$key" = "ytdlp" ] && [ "$PM" != "brew" ]; then
+    NEED_YTDLP=1
+  elif [ "$key" = "deno" ] && [ "$PM" != "brew" ]; then
+    NEED_DENO=1
+    has_any unzip || PACKAGES+=(unzip)
   elif [ "$key" = "openpyxl" ] && { [ "$PM" = "brew" ] || [ -z "$PM" ]; }; then
     PIP_MODULES+=("$key")
   else
@@ -204,6 +218,8 @@ info ""
 [ "${#PACKAGES[@]}" -gt 0 ] && info "Paquets à installer via $PM : ${PACKAGES[*]}"
 [ "${#PIP_MODULES[@]}" -gt 0 ] && info "Modules Python à installer via pip (--user) : ${PIP_MODULES[*]}"
 [ "$NEED_MEDIAWIKI" -eq 1 ] && info "CLI mediawiki à installer depuis $MEDIAWIKI_INSTALLER"
+[ "$NEED_YTDLP" -eq 1 ] && info "yt-dlp à installer dans ~/.local/bin depuis $YTDLP_URL"
+[ "$NEED_DENO" -eq 1 ] && info "Deno à installer dans ~/.deno depuis $DENO_INSTALLER"
 confirm "Continuer ?" || { info "Abandon."; exit 1; }
 
 if [ "${#PACKAGES[@]}" -gt 0 ]; then
@@ -221,6 +237,22 @@ if [ "$NEED_MEDIAWIKI" -eq 1 ]; then
     *":$HOME/.local/bin:"*) ;;
     *) warn "Ajoutez ~/.local/bin à votre PATH puis ouvrez un nouveau terminal." ;;
   esac
+fi
+
+if [ "$NEED_YTDLP" -eq 1 ]; then
+  mkdir -p "$HOME/.local/bin"
+  curl -fL "$YTDLP_URL" -o "$HOME/.local/bin/yt-dlp"
+  chmod +x "$HOME/.local/bin/yt-dlp"
+  case ":$PATH:" in
+    *":$HOME/.local/bin:"*) ;;
+    *) warn "Ajoutez ~/.local/bin à votre PATH puis ouvrez un nouveau terminal." ;;
+  esac
+fi
+
+if [ "$NEED_DENO" -eq 1 ]; then
+  # -y : ajoute aussi ~/.deno/bin au PATH dans le fichier de démarrage du shell
+  curl -fsSL "$DENO_INSTALLER" | sh -s -- -y
+  warn "Ouvrez un nouveau terminal pour que la commande deno soit disponible."
 fi
 
 info ""
