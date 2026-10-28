@@ -35,13 +35,7 @@ mediawiki rename <url-page> <nouvelle-url> --reason "..."
 
 Sur ImageMagick 7 la commande est `magick` ; sur ImageMagick 6 (Debian/Ubuntu) c'est `convert`. Vérifie avec `command -v magick || command -v convert`.
 
-Avant tout téléversement, prépare l'image :
-
-```bash
-magick source.png -auto-orient -strip -resize '2000x2000>' -quality 85 tp-travail/nom-final.jpg
-```
-
-(`-strip` retire les métadonnées EXIF, dont la géolocalisation.)
+Pour préparer, nommer, placer et téléverser des images (photo en JPEG de 1000 px de large, PNG conservé pour schémas et logos, image d'illustration du modèle, galeries), utilise la skill `images`.
 
 ### Pandoc et Poppler
 
@@ -91,7 +85,7 @@ Le titre suit des règles propres à chaque type de page (nom d'action pour un r
 4. **Montrer et faire valider.** Pour une page nouvelle, montre le wikitext (ou un résumé structuré s'il est long, avec le chemin du fichier). Pour une page existante, montre `diff -u ancien.wiki nouveau.wiki`. Attends un accord explicite.
 5. **Résumé de modification** en français, précis, avec `--summary` (ex. « Création de la page à partir du compte rendu d'essai 2024 de la Chambre d'agriculture »).
 6. **Jamais de suppression ni de renommage** sans demande explicite de l'utilisateur.
-7. **Images** : vérifie que le fichier n'existe pas déjà (`mediawiki read <base>/wiki/Fichier:Nom.jpg`), mentionne la source et la licence dans la description, et demande à l'utilisateur s'il a le droit de publier l'image.
+7. **Images** (détails dans la skill `images`) : vérifie que le fichier n'existe pas déjà (`mediawiki read <base>/wiki/Fichier:Nom.jpg`), mentionne la source et la licence dans la description, et demande à l'utilisateur s'il a le droit de publier l'image.
 8. Après publication, donne l'URL de la page à l'utilisateur.
 9. **Liens internes automatiques.** Juste après avoir publié un article (création ou modification), fais poser les liens par LinkTitles, présent sur tous les wikis Triple Performance. Annonce cette étape au moment de la validation (étape 4) : l'accord donné pour publier la couvre.
 

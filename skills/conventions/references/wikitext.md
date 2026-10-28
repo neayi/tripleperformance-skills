@@ -34,8 +34,12 @@ Les liens internes vers les articles ne s'écrivent pas à la main : LinkTitles 
 ## Images
 
 ```
-[[Fichier:Nom de l'image.jpg|vignette|droite|300px|Légende de l'image]]
+[[File:Nom de l'image.jpg|thumbnail|Légende]]                     à droite, habillée par le texte
+[[File:Nom de l'image.jpg|center|thumbnail|400px|Légende]]       centrée, avec cadre et légende
+[[File:Nom de l'image.jpg|center|noframe|400px]]                 centrée, sans cadre ni légende
 ```
+
+Galeries, choix de l'image d'illustration du modèle et préparation des fichiers : voir la skill `images`.
 
 ## Références
 

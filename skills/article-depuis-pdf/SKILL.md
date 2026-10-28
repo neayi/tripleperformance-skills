@@ -19,7 +19,7 @@ Applique les règles de la skill `conventions`.
 
    - Si le texte extrait est vide ou illisible (PDF scanné), convertis les pages en images (`pdftoppm -png -r 150`) et lis-les directement.
    - Pour les pages contenant des tableaux ou graphiques, génère l'image de la page (`pdftoppm -png -r 150 -f N -l N`) et regarde-la : la mise en page de `pdftotext` déforme souvent les tableaux.
-   - Images utiles (photos de parcelles, matériel) : `pdfimages -png -f N -l N fichier.pdf tp-travail/<sujet>/img`.
+   - Images utiles (photos de parcelles, matériel) : `pdfimages -png -f N -l N fichier.pdf tp-travail/<sujet>/img`, puis tri, nommage, conversion et choix de l'image d'illustration avec la skill `images`.
 
 3. **Vérifie l'existant** avec la skill `recherche` : page déjà existante sur le sujet, pages à lier (cultures, pratiques, matériels cités).
 

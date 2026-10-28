@@ -15,6 +15,7 @@ Les skills s'appuient sur des outils en ligne de commande : la CLI [`mediawiki`]
 | `traduction` | Traduit une page d'une version linguistique du wiki vers une autre. | « Traduis la page Ferme des Pâtures en anglais. » |
 | `tableau-depuis-image` | Convertit une image de tableau en tableau wiki natif. | « Transforme cette capture de tableau en tableau wiki. » |
 | `graphique-depuis-image` | Convertit une image de graphique en graphique natif ECharts. | « Refais ce graphique en ECharts. » |
+| `images` | Nomme, convertit, redimensionne et place les images d'un article ; choisit l'image d'illustration du modèle. | « Ajoute ces photos à l'article et choisis l'image principale. » |
 | `video-youtube` | Importe une vidéo YouTube : fiche Vidéo, vignette, transcription et article mis en forme. | « Importe cette vidéo : https://www.youtube.com/watch?v=KZ5Tz3IGoSI » |
 
 Les skills se déclenchent automatiquement quand votre demande correspond à leur description. Vous pouvez aussi les appeler explicitement, par exemple `/triple-performance:recherche`.

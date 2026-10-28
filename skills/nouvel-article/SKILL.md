@@ -46,7 +46,7 @@ Applique les règles de la skill `conventions`.
 
    puis ajoute les liens internes avec LinkTitles (étape 9 des règles de publication).
 
-7. Si l'article prévoit une image (champ `Image`, `Bannière`…), prépare-la et téléverse-la selon `conventions`, après accord.
+7. **Images** : choisis l'image d'illustration du modèle (`Image`, `Bannière`, `Logo`… selon le modèle), prépare et téléverse les images avec la skill `images`, avant la page qui les utilise.
 
 ## Titre de la page
 
