@@ -95,7 +95,7 @@ Le titre suit des règles propres à chaque type de page (nom d'action pour un r
    diff -u tp-travail/<sujet>/page.wiki tp-travail/<sujet>/apres-liens.wiki
    ```
 
-   La CLI se charge du jeton et du POST ; l'utilisateur doit être connecté. Montre les liens ajoutés à l'utilisateur. Si l'un d'eux est hors sujet (homonyme, lien dans une citation), propose de le retirer : c'est une nouvelle modification, à faire valider comme les autres.
+   La CLI se charge du jeton et du POST ; l'utilisateur doit être connecté. Montre les liens ajoutés à l'utilisateur. Si l'un d'eux est hors sujet (homonyme, lien dans une citation), propose de le retirer : c'est une nouvelle modification, à faire valider comme les autres. Si la page cible est un homonyme courant (ex. `Verse`, `Rouille`, `Test`), propose aussi d'ajouter `__NOAUTOLINKTARGET__` en fin de page cible (redirections comprises) pour que LinkTitles ne la vise plus ; l'API `prop=pageprops` doit alors renvoyer `MAG_LINKTITLES_NOTARGET`.
 
 ## Améliorer cette skill
 

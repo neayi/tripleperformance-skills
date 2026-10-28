@@ -73,7 +73,7 @@ Règles champ par champ :
 
 - **Producteur** : `producteur` de `video.json` (nom de la chaîne), tel quel.
 - **Titre** : le titre de la vidéo, avec les mêmes corrections de casse que le titre de la page.
-- **Programme** : Le programme de recherche associé à la vidéo (ex : Conserwa, NBSOIL, SOL Couverts, etc.). Laisse vide si aucun programme n'est mentionné dans la vidéo ou la description. Le programme doit correspondre à une entrée de la catégorie https://wiki.tripleperformance.fr/wiki/Cat%C3%A9gorie:Projets
+- **Programme** : Le programme de recherche associé à la vidéo (ex : Conserwa, NBSOIL, SOL Couverts, etc.). Laisse vide si aucun programme n'est mentionné dans la vidéo ou la description. Le programme doit correspondre à une entrée de la catégorie https://wiki.tripleperformance.fr/wiki/Cat%C3%A9gorie:Projets, avec le titre exact de la page et non une redirection (`NBSOIL Knowledge Marketplace`, pas `NBSOIL`).
 - **Pertinence**, **Top30_VdT**, **Thématique**, **Production** : laisser vides (ce sont des choix éditoriaux de l'équipe).
 - **Intervenants 0, 1, 2…** : les personnes qui s'expriment, tirées du titre et de la description (pas de la transcription seule, trop peu fiable pour les noms). Un champ par personne, numéroté à partir de 0, au format `Prénom Nom` avec la bonne casse et les accents. Pas d'organisme ici. En cas de doute sur une personne, demande à l'utilisateur.
 - **Vignette** : `thumbnail_youtube_<id>.jpg`.
