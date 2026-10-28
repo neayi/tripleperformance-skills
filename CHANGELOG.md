@@ -10,6 +10,7 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ### Ajouté
 
+- `nouvel-article/references/modeles.md` : formulaire associé et pièges de chaque modèle de `Catégorie:Modèles de catégories` ; les paramètres se lisent dans la TemplateData du modèle (API `action=templatedata`).
 - `conventions/references/titres.md` : règles de choix du titre par type de page (retour d'expérience, portrait de ferme, fiche technique, concept, livre, vidéo), appliquées par `nouvel-article`, `article-depuis-pdf` et `traduction`.
 - Skill `images` : nommage explicite, photos en JPEG de 1000 px de large, PNG conservé pour schémas, tableaux et logos, choix de l'image d'illustration selon le modèle (partage OpenGraph), images dans le corps (vignette, centrée, galerie), proposition de conversion des tableaux et graphiques. Script `analyse_images.py`.
 - Paragraphe introductif obligatoire avant le premier titre (sauf pages Vidéo) : il sert de description OpenGraph via l'extension Description2, tronquée vers 300 caractères.

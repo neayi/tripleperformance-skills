@@ -20,8 +20,8 @@ Applique les règles de la skill `conventions`.
    Propose le plus adapté à l'utilisateur et fais-le confirmer s'il y a un doute (ex. « Pratique » vs « Exemple de mise en œuvre »). Pour une vidéo YouTube, utilise plutôt la skill `video-youtube`.
 
 3. **Récupère la structure attendue** dans `tp-travail/<sujet>/` :
-   - le formulaire Page Forms, qui liste les champs et leurs valeurs possibles : `mediawiki read https://wiki.tripleperformance.fr/wiki/Formulaire:<Modèle>` (s'il contient `#REDIRECTION [[...]]`, lis la cible) ;
-   - le modèle lui-même si besoin : `mediawiki read https://wiki.tripleperformance.fr/wiki/Modèle:<Modèle>` (la partie `<noinclude>` documente parfois l'usage) ;
+   - les paramètres du modèle via TemplateData et les pièges propres à chaque modèle : voir [references/modeles.md](references/modeles.md) ;
+   - le formulaire Page Forms, s'il existe, pour les valeurs possibles des champs (listes, catégories proposées) ;
    - **deux ou trois articles existants** utilisant ce modèle, de préférence bien remplis, comme exemples de ton, de plan et de remplissage des champs :
 
      ```bash
@@ -54,4 +54,4 @@ Applique les règles de titre par type de page de la skill `conventions` (`refer
 
 ## À enrichir
 
-Consigne ici, modèle par modèle, les champs obligatoires et pièges rencontrés (ex. séparateur `@` pour `Objectif` et `Type de production` dans `Pratique`).
+Consigne les champs obligatoires et pièges rencontrés, modèle par modèle, dans [references/modeles.md](references/modeles.md).
