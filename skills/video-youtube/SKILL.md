@@ -37,6 +37,8 @@ Sinon, il appelle `yt-dlp` et écrit dans `tp-travail/youtube-<id>/` :
 
 ## 2. Titre de la page
 
+Les pages Vidéo font exception aux règles de titre de `conventions` : le titre est celui de la vidéo, nettoyé.
+
 Le script propose `titre_page` : caractères interdits (`# < > [ ] | { } _`) et emojis retirés, titre tout en capitales passé en minuscules avec majuscule initiale. Relis-le :
 
 - rétablis les majuscules des noms propres, sigles et lieux (« Lucien seguy » → « Lucien Séguy »), en t'appuyant sur la description ;
@@ -103,6 +105,8 @@ Après la transcription, écris le corps de l'article à partir de la transcript
 - Les dialogues et questions du public peuvent être rendus en « Question : … » / réponse, ou en citations en italique entre guillemets pour les phrases marquantes.
 - Listes à puces pour les énumérations, tableaux wiki si l'intervenant présente des données comparées.
 - N'écris pas de liens internes : ils sont ajoutés après publication par LinkTitles (étape 7).
+
+Pas de paragraphe introductif à rédiger : contrairement aux autres articles, le résumé du modèle Vidéo en tient lieu.
 
 **Titres** : commence au niveau 2 (`== Titre ==`), puis `===` pour les sous-parties. Casse française : majuscule au premier mot seulement (et aux noms propres) — `== Le fonctionnement redox des sols ==`, jamais `== Le Fonctionnement Redox Des Sols ==`. Si la vidéo a des chapitres, ils donnent le plan de premier niveau.
 

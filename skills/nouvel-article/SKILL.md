@@ -32,6 +32,7 @@ Applique les règles de la skill `conventions`.
 
 5. **Rédige le wikitext** dans `tp-travail/<sujet>/<Titre>.wiki` :
    - appel du modèle en tête, avec les champs du formulaire, une ligne par champ (`| Champ = valeur`) ; les valeurs multiples suivent le séparateur indiqué par le formulaire (souvent `,`) ;
+   - paragraphe introductif avant le premier titre, autonome et informatif dès les 300 premiers caractères (voir « Structure d'un article » dans `conventions`) ;
    - plan inspiré des articles exemples ;
    - pas de liens internes : ils sont ajoutés par LinkTitles une fois la page en ligne (voir `conventions`)
    - Utilise `<ref>` pour les références, en précisant l'url de la page ou du PDF, le nom de l'auteur et la date si possible.
@@ -49,7 +50,7 @@ Applique les règles de la skill `conventions`.
 
 ## Titre de la page
 
-Reprends la forme des titres existants du même modèle (singulier/pluriel, majuscule initiale uniquement, pas d'article en tête sauf usage contraire).
+Applique les règles de titre par type de page de la skill `conventions` (`references/titres.md`) : « Mise en place d'une serre en aquaponie de 1600 m² dans le Gers » pour un retour d'expérience, « Autoconstruire un semoir à dent » pour une fiche technique (`Pratique`), « EARL Besnard » pour un portrait de ferme, « Bruche du pois » pour un concept, « Le pâturage tournant dynamique (2020) » pour un livre. Ne recopie pas la forme des titres existants quand elle s'en écarte. Fais valider le titre en même temps que le choix du modèle (étape 2).
 
 ## À enrichir
 

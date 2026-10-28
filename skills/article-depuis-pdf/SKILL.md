@@ -23,9 +23,10 @@ Applique les règles de la skill `conventions`.
 
 3. **Vérifie l'existant** avec la skill `recherche` : page déjà existante sur le sujet, pages à lier (cultures, pratiques, matériels cités).
 
-4. **Plan.** Choisis le modèle de page (voir skill `nouvel-article`) et propose un plan à l'utilisateur avant de rédiger si le document est long ou couvre plusieurs sujets (il peut falloir plusieurs articles).
+4. **Plan.** Choisis le modèle de page (voir skill `nouvel-article`) et le titre selon les règles de `conventions` (`references/titres.md`), et propose un plan à l'utilisateur avant de rédiger si le document est long ou couvre plusieurs sujets (il peut falloir plusieurs articles).
 
 5. **Rédaction** dans `tp-travail/<sujet>/<Titre>.wiki` :
+   - commence, après le modèle, par un paragraphe introductif qui présente le document et son apport principal (voir « Structure d'un article » dans `conventions`) ;
    - reformule pour un public d'agriculteurs, ne recopie pas des pages entières ;
    - garde **tous les chiffres exacts** (doses, rendements, dates, surfaces) et indique leur contexte (année, lieu, conditions) ;
    - tableaux → wikitext natif (voir skill `tableau-depuis-image`) ;

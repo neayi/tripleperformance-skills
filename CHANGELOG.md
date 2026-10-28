@@ -10,6 +10,8 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ### Ajouté
 
+- `conventions/references/titres.md` : règles de choix du titre par type de page (retour d'expérience, portrait de ferme, fiche technique, concept, livre, vidéo), appliquées par `nouvel-article`, `article-depuis-pdf` et `traduction`.
+- Paragraphe introductif obligatoire avant le premier titre (sauf pages Vidéo) : il sert de description OpenGraph via l'extension Description2, tronquée vers 300 caractères.
 - Skill `video-youtube` : import d'une vidéo YouTube (modèle Vidéo, vignette `thumbnail_youtube_<id>.jpg`, transcription brute, article mis en forme), avec le script `youtube.py`, qui vérifie d'abord par Semantic MediaWiki (`A une URL de vidéo`) que la vidéo n'est pas déjà sur le wiki.
 - yt-dlp et Deno ajoutés aux outils installés (exécutable officiel de yt-dlp sous Linux, Homebrew sur macOS, winget sous Windows).
 - `search.py --exists` : vérifie en une requête l'existence d'une liste de titres, redirections comprises.

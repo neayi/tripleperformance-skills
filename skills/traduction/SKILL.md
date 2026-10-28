@@ -27,9 +27,11 @@ Applique les règles de la skill `conventions`.
    - **Graphiques ECharts** : traduis les textes (`title`, `name`, libellés d'axes, légendes) dans le JSON sans toucher à la structure.
 
 4. **Traduis** dans `tp-travail/<sujet>/<lang>.wiki` :
+   - titre : traduis-le en respectant les règles de titre du type de page (`conventions`, `references/titres.md`) — infinitif pour une fiche technique, nom d'action pour un retour d'expérience, nom au singulier pour un concept ; les noms de ferme et titres de livres publiés ne se traduisent pas (sauf édition existante dans la langue cible) ;
    - vocabulaire agronomique précis et usuel dans la langue cible (ex. « couvert végétal » → *cover crop*, « méteil » → *cereal-legume mixture* / *intercrop*) ; en cas de doute sur un terme technique, garde le terme d'origine entre parenthèses ;
    - conserve chiffres, unités et références ; adapte seulement le format des nombres (virgule/point décimal) ;
-   - noms propres (fermes, organismes, programmes) non traduits.
+   - noms propres (fermes, organismes, programmes) non traduits ;
+   - le paragraphe introductif (avant le premier titre) doit rester informatif dans ses 300 premiers caractères une fois traduit ; si la source n'en a pas, rédige-le et signale-le à l'utilisateur.
 
 5. **Rapport à l'utilisateur** : images manquantes, termes incertains.
 
