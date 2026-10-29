@@ -6,6 +6,7 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ### Modifié
 
+- `conventions` : LinkTitles n'est relancé qu'après une création ou une modification qui ajoute ou réécrit du texte, pas après l'ajout d'une image ou d'un graphique, une correction de paramètre ou de lien, ni un renommage.
 - `conventions` : LinkTitles n'est relancé qu'après un ajout ou une réécriture de texte, pas pour une image, un graphique ou une correction.
 - `conventions` : balise `<noautolinks>` pour empêcher LinkTitles de reposer un lien retiré.
 - `graphique-depuis-image` se limite à la lecture de l'image et confie le JSON, la sous-page et la publication à la skill `graphiques` ; sa référence ECharts y est déplacée. `conventions`, `traduction` et `article-depuis-pdf` renvoient vers `graphiques`.

@@ -87,7 +87,7 @@ Le titre suit des règles propres à chaque type de page (nom d'action pour un r
 6. **Jamais de suppression ni de renommage** sans demande explicite de l'utilisateur.
 7. **Images** (détails dans la skill `images`) : vérifie que le fichier n'existe pas déjà (`mediawiki read <base>/wiki/Fichier:Nom.jpg`), mentionne la source et la licence dans la description, et demande à l'utilisateur s'il a le droit de publier l'image.
 8. Après publication, donne l'URL de la page à l'utilisateur.
-9. **Liens internes automatiques.** Juste après avoir publié un article (création ou modification), fais poser les liens par LinkTitles, présent sur tous les wikis Triple Performance. Annonce cette étape au moment de la validation (étape 4) : l'accord donné pour publier la couvre.
+9. **Liens internes automatiques.** Juste après avoir publié un article (création, ou modification qui ajoute ou réécrit du texte), fais poser les liens par LinkTitles. Ne le relance pas pour une modification sans nouveau texte : ajout d'une image ou d'un graphique, correction d'un paramètre ou d'un lien, renommage. LinkTitles est présent sur tous les wikis Triple Performance. Annonce cette étape au moment de la validation (étape 4) : l'accord donné pour publier la couvre.
 
    ```bash
    mediawiki api "<base>/api.php?action=linktitles&page=<Titre_avec_underscores>"
