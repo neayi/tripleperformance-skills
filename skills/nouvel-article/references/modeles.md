@@ -12,7 +12,7 @@ Le formulaire Page Forms d'un modèle (`Formulaire:<Nom>`) liste ses champs dans
 |---|---|---|
 | Pratique | `Formulaire:Fiche technique` | `Objectif` et `Type de production` séparés par `@` |
 | Exemple de mise en œuvre | `Formulaire:Retour d'expérience` | `Cultures`, `Cahier des charges`, `Autres caractéristiques`, `Objectif` séparés par `@` ; `Type de production` par `,` ; `Latitude`/`Longitude` absents du formulaire |
-| Portrait de ferme | `Formulaire:Portrait de ferme` | mêmes paramètres que ci-dessus, plus `Sous-titre`, `Bannière`, `Logo`, `URL` |
+| Portrait de ferme | `Formulaire:Portrait de ferme` | mêmes paramètres que ci-dessus, plus `Sous-titre`, `Bannière`, `Logo`, `URL` ; `Organisme` = titre d'une page de l'espace `Structure:` (n° 3000), sans préfixe, sinon lien rouge (ex. `Chambre régionale d'agriculture des Pays de la Loire`, `Chambre d'agriculture Pays de la Loire - Vendée`) : liste via `list=allpages&apnamespace=3000` ; `pH` attend `Sol acide`, `Sol peu acide`, `Sol neutre` ou `Sol basique` ; `Nom de l'agriculteur` crée un lien vers `Utilisateur:<Nom>` |
 | Culture | `Formulaire:Culture et production` | `Nom latin` plutôt que `Latin` |
 | Bioagresseur | `Formulaire:Bioagresseur` | paramètre `type` en minuscule (Adventices, Ravageurs…) |
 | Matériel | `Formulaire:Matériel et équipement` | `Type de matériel` absent du formulaire mais attendu |

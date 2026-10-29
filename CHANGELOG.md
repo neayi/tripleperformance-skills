@@ -6,6 +6,7 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ### Modifié
 
+- `nouvel-article` : modèle Portrait de ferme — `Organisme` renvoie à une page `Structure:`, valeurs attendues de `pH`, lien `Utilisateur:` créé par `Nom de l'agriculteur`.
 - `conventions` : LinkTitles n'est relancé qu'après une création ou une modification qui ajoute ou réécrit du texte, pas après l'ajout d'une image ou d'un graphique, une correction de paramètre ou de lien, ni un renommage.
 - `conventions` : LinkTitles n'est relancé qu'après un ajout ou une réécriture de texte, pas pour une image, un graphique ou une correction.
 - `conventions` : balise `<noautolinks>` pour empêcher LinkTitles de reposer un lien retiré.
