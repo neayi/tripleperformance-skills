@@ -18,6 +18,7 @@ Le formulaire Page Forms d'un modèle (`Formulaire:<Nom>`) liste ses champs dans
 | Matériel | `Formulaire:Matériel et équipement` | `Type de matériel` absent du formulaire mais attendu |
 | Livre | `Formulaire:Livre` | `Auteurs` séparés par `@` ; le PDF va dans `PDF` |
 | Vidéo | `Formulaire:Vidéo` | voir la skill `video-youtube` ; `Programme` et `Résumé` absents du formulaire |
+| ITK | — | itinéraire technique d'une culture dans une ferme ; `Culture` obligatoire (sinon erreur sémantique), titres exacts des pages de culture au singulier (`Tomate`, pas `Tomates`) ; sans `Image`, la photo de la page de culture n'est reprise que s'il n'y a **qu'une** culture : avec plusieurs, renseigne `Image` ; `Production` est sans effet actuellement (renseigne-le quand même, comme les pages existantes) ; `Ferme` = titre exact de la page de la ferme, à omettre pour un ITK de cahier des charges ; `Rendement` avec unité (`4,5 kg/m²`, `t/ha`, `q/ha`) ; listes séparées par `,` ; `Organisme = MSV Normandie` ajoute le bandeau MSV. Pour la frise des interventions, ajouter un graphique TIKA (skill `graphiques`) |
 | Label | — | `Objectif`, `Type de production` séparés par `@` |
 | Outil d'aide, Intrant, Auxiliaire, MFSC, Accident climatique et physiologique, Facteur environnemental, Arbre, Cépage, Grande thématique, Fonction service stratégie | — | `Nom` souvent ignoré (le titre de la page est utilisé) |
 | Contributeur | — | sur les pages `Utilisateur:` |

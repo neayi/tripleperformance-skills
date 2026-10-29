@@ -1,6 +1,6 @@
 ---
 name: nouvel-article
-description: Crée un nouvel article sur Triple Performance à partir d'un des modèles de la Catégorie:Modèles de catégories (Pratique, Culture, Bioagresseur, Auxiliaire, Matériel, Intrant, Outil d'aide, Exemple de mise en œuvre, Livre, Vidéo, Label, Projet étudiant…). À utiliser quand l'utilisateur veut créer, rédiger ou initialiser une page, une fiche pratique, une fiche culture, une fiche matériel, etc.
+description: Crée un nouvel article sur Triple Performance à partir d'un des modèles de la Catégorie:Modèles de catégories (Pratique, Culture, Bioagresseur, Auxiliaire, Matériel, Intrant, Outil d'aide, Exemple de mise en œuvre, ITK (itinéraire technique), Livre, Vidéo, Label, Projet étudiant…). À utiliser quand l'utilisateur veut créer, rédiger ou initialiser une page, une fiche pratique, une fiche culture, une fiche matériel, etc.
 ---
 
 # Créer un article à partir d'un modèle

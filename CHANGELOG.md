@@ -14,6 +14,7 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ### Ajouté
 
+- `nouvel-article/references/modeles.md`, `images` : modèle `ITK` (itinéraire technique d'une culture, dans une ferme ou un cahier des charges), paramètres, image par défaut et pièges ; `conventions/references/titres.md` : titre « ITK <culture> à la <ferme> » ou « ITK <culture> en <cahier des charges> ».
 - `graphiques` : dans un assolement, une couleur distincte par culture (cohérente avec la rotation de la page), et non la seule couleur du groupe.
 - Skill `graphiques` : graphiques stockés en sous-pages JSON (`<Page>/<Nom>.json`, modèle de contenu `json`) et appelés par `{{Graphique Triple Performance}}` ; gabarits ECharts (assolement, barres, radar, ombrothermique, camembert), schéma des rotations et itinéraires techniques TIKA (frise ou donut, interventions), graphiques en ligne et à paramètres. Script `graphique.py` : `verifie` (format et cohérence des dates), `apercu` (page HTML rendue comme sur le wiki), `liste` (graphiques d'une page et état de leurs sous-pages).
 - `images` : diagnostic et correction des photos affichées couchées (balise EXIF `Orientation` conservée dans les miniatures du wiki).

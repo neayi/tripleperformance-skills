@@ -10,6 +10,7 @@ Les pages existantes ne respectent pas toujours ces règles (beaucoup de retours
 | Portrait de ferme | `Portrait de ferme` | Nom de la ferme | « EARL Besnard », « GAEC BioTaupes » |
 | Fiche technique | `Pratique` | Verbe à l'infinitif | « Mettre en place un distributeur automatique à la ferme », « Autoconstruire un semoir à dent » |
 | Concept | `Culture`, `Arbre`, `Bioagresseur`, `Auxiliaire`, `Accident climatique et physiologique`, `Matériel`, `Outil d'aide`, `Intrant`, `Label`, `Fonction service stratégie`, `MFSC` | Nom le plus précis, au singulier, sans article | « Blé », « Bruche du pois », « Méthode MERCI » |
+| Itinéraire technique | `ITK` | « ITK » + culture, puis la ferme ou le cahier des charges | « ITK Poireau à la Ferme des Gobettes », « ITK Poireau en maraîchage sol vivant » |
 | Livre | `Livre` | Titre du livre, puis année de parution entre parenthèses | « Le pâturage tournant dynamique (2020) » |
 | Vidéo | `Vidéo` | Voir la skill `video-youtube` | — |
 
@@ -17,6 +18,15 @@ Les pages existantes ne respectent pas toujours ces règles (beaucoup de retours
 
 - Transforme le verbe en nom : « Mise en place… » plutôt que « Mettre en place… », « Plantation de carottes… » plutôt que « Planter des carottes… ».
 - Le titre doit refléter ce que ce retour d'expérience a d'original : taille, technique, lieu, contexte. « Mise en place d'une serre en aquaponie de 1600 m² dans le Gers » plutôt que « Mise en place d'une serre de fraises ».
+
+## Itinéraire technique
+
+Deux cas, selon ce que décrit la page :
+
+- **ITK d'une ferme** : « ITK <culture> à la <ferme> » (ou « au », « chez »), avec le nom de la ferme tel qu'il figure dans le titre de sa page et dans le paramètre `Ferme` : « ITK Poireau à la Ferme des Gobettes ».
+- **ITK d'un cahier des charges** (référence générale, sans ferme particulière) : « ITK <culture> en <cahier des charges> » : « ITK Poireau en maraîchage sol vivant ». Le paramètre `Ferme` reste vide.
+
+Culture au singulier, avec une majuscule comme dans la plupart des pages existantes (« ITK Poireau »). Plusieurs cultures : « ITK Fève, épinard et pois à la ferme de l'Alterrenative ». Les formes « Fiche ITK : … » et « Cultiver des … » des pages anciennes ne sont pas à reproduire.
 
 ## Portrait de ferme
 

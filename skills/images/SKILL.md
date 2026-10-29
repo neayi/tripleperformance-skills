@@ -73,6 +73,7 @@ Les paramètres varient selon le modèle (valeur : le nom du fichier seul, sans 
 | `Arbre`, `Auxiliaire`, `Accident climatique et physiologique`, `Outil d'aide`, `MFSC` | `Image` + `ImageCaption` |
 | `Matériel`, `Intrant` | `Photo d'illustration` (ou `Image`) + `ImageCaption` |
 | `Exemple de mise en œuvre` | `Image` + `ImageCaption`, `Photo d'illustration`, `Photo de l'agriculteur` |
+| `ITK` | `Image` + `ImageCaption` ; sans `Image`, photo de la page de culture, seulement si `Culture` n'en contient qu'une |
 | `Portrait de ferme` | `Photo d'illustration`, `Photo de l'agriculteur`, `Logo` (de la ferme), `Bannière` |
 | `Programme` | `Logo` (du programme), `Logo organisme` (organisme porteur), `Bannière` (photo horizontale, image de partage) |
 | `Structure` | `Logo`, `Bannière` |
