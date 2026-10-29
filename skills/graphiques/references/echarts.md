@@ -21,7 +21,13 @@ Ces gabarits reprennent les graphiques de la page d'aide (sous-pages `Aide:Insé
 
 ### Assolement (treemap) — `type = Assolement`
 
-Un groupe par grande catégorie (couleur sur le groupe), une feuille par culture, surfaces en ha.
+Un groupe par grande catégorie, une feuille par culture, surfaces en ha.
+
+**Une couleur par culture.** Donne à chaque culture (feuille) sa propre couleur dans `itemStyle.color`, choisie pour qu'on la distingue au premier coup d'œil de ses voisines : sans cela, toutes les cultures d'un groupe prennent la couleur du groupe et ne se différencient que par leur libellé.
+
+- Garde une couleur évocatrice de la culture (blé doré, colza jaune vif, maïs orangé, prairie verte, luzerne vert foncé, féverole et pois brun clair…) et reprends celles de la rotation TIKA de la même page, s'il y en a une (voir [tika.md](tika.md#couleurs-habituelles)) : la même culture a la même couleur dans tous les graphiques de l'article.
+- Au sein d'un groupe, varie franchement la teinte ou la clarté entre cultures voisines (pas deux jaunes proches côte à côte) ; la couleur du groupe sert de famille et de couleur de repli.
+- Garde des couleurs assez claires pour que l'étiquette noire reste lisible ; sinon passe `label.color` à `#ffffff`.
 
 ```json
 {
@@ -31,21 +37,23 @@ Un groupe par grande catégorie (couleur sur le groupe), une feuille par culture
     "itemStyle": { "borderWidth": 0, "gapWidth": 2 },
     "data": [
       { "name": "Cultures de vente", "itemStyle": { "color": "#ffe599" }, "children": [
-        { "name": "Blé tendre", "value": 76, "label": { "formatter": "{b} - {c}ha", "color": "#000000" } },
-        { "name": "Colza", "value": 32, "label": { "formatter": "{b} - {c}ha", "color": "#000000" } }
+        { "name": "Blé tendre", "value": 76, "itemStyle": { "color": "#e6b422" }, "label": { "formatter": "{b} - {c}ha", "color": "#000000" } },
+        { "name": "Colza", "value": 32, "itemStyle": { "color": "#fff176" }, "label": { "formatter": "{b} - {c}ha", "color": "#000000" } },
+        { "name": "Féverole", "value": 15, "itemStyle": { "color": "#c49a6c" }, "label": { "formatter": "{b} - {c}ha", "color": "#000000" } }
       ] },
       { "name": "Surface fourragère", "itemStyle": { "color": "#afd095" }, "children": [
-        { "name": "Prairie permanente", "value": 25, "label": { "formatter": "{b} - {c}ha", "color": "#000000" } }
+        { "name": "Prairie permanente", "value": 25, "itemStyle": { "color": "#93c47d" }, "label": { "formatter": "{b} - {c}ha", "color": "#000000" } },
+        { "name": "Luzerne", "value": 12, "itemStyle": { "color": "#38761d" }, "label": { "formatter": "{b} - {c}ha", "color": "#ffffff" } }
       ] },
       { "name": "SIE", "itemStyle": { "color": "#ead1dc" }, "children": [
-        { "name": "Haies", "value": 5, "label": { "formatter": "{b} - {c}ha", "color": "#000000" } }
+        { "name": "Haies", "value": 5, "itemStyle": { "color": "#d5a6bd" }, "label": { "formatter": "{b} - {c}ha", "color": "#000000" } }
       ] }
     ]
   }]
 }
 ```
 
-Couleurs de catégories de l'aide : cultures de vente `#ffe599`, surface fourragère `#afd095`, jachère `#efefef`, SIE `#ead1dc` (ou `#b6d7a8`).
+Couleurs de catégories de l'aide : cultures de vente `#ffe599`, surface fourragère `#afd095`, jachère `#efefef`, SIE `#ead1dc` (ou `#b6d7a8`). Les assolements existants n'ont souvent que ces couleurs de groupe : en modifiant l'un d'eux, propose d'ajouter des couleurs par culture.
 
 ### Barres par année — `type = Bar chart par année`
 

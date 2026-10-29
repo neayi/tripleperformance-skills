@@ -6,12 +6,14 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ### Modifié
 
+- `conventions` : LinkTitles n'est relancé qu'après un ajout ou une réécriture de texte, pas pour une image, un graphique ou une correction.
 - `conventions` : balise `<noautolinks>` pour empêcher LinkTitles de reposer un lien retiré.
 - `graphique-depuis-image` se limite à la lecture de l'image et confie le JSON, la sous-page et la publication à la skill `graphiques` ; sa référence ECharts y est déplacée. `conventions`, `traduction` et `article-depuis-pdf` renvoient vers `graphiques`.
 - Les skills n'écrivent plus de liens internes elles-mêmes : après publication, elles appellent l'API `linktitles` (extension LinkTitles) via `mediawiki api`, puis montrent les liens ajoutés (`diff -u`). Nouvelle étape 9 des règles de publication dans `conventions`.
 
 ### Ajouté
 
+- `graphiques` : dans un assolement, une couleur distincte par culture (cohérente avec la rotation de la page), et non la seule couleur du groupe.
 - Skill `graphiques` : graphiques stockés en sous-pages JSON (`<Page>/<Nom>.json`, modèle de contenu `json`) et appelés par `{{Graphique Triple Performance}}` ; gabarits ECharts (assolement, barres, radar, ombrothermique, camembert), schéma des rotations et itinéraires techniques TIKA (frise ou donut, interventions), graphiques en ligne et à paramètres. Script `graphique.py` : `verifie` (format et cohérence des dates), `apercu` (page HTML rendue comme sur le wiki), `liste` (graphiques d'une page et état de leurs sous-pages).
 - `images` : diagnostic et correction des photos affichées couchées (balise EXIF `Orientation` conservée dans les miniatures du wiki).
 - `conventions` : après LinkTitles, proposer `__NOAUTOLINKTARGET__` sur les pages cibles homonymes (vérifiable via `prop=pageprops`).
