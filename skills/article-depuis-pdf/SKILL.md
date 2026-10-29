@@ -30,7 +30,7 @@ Applique les règles de la skill `conventions`.
    - reformule pour un public d'agriculteurs, ne recopie pas des pages entières ;
    - garde **tous les chiffres exacts** (doses, rendements, dates, surfaces) et indique leur contexte (année, lieu, conditions) ;
    - tableaux → wikitext natif (voir skill `tableau-depuis-image`) ;
-   - graphiques → ECharts (voir skill `graphique-depuis-image`) quand ils apportent une information clé ;
+   - graphiques → ECharts (voir skill `graphique-depuis-image`) quand ils apportent une information clé ; rotations et itinéraires techniques décrits dans le document → graphique TIKA (skill `graphiques`) ;
    - cite la source avec `<ref>` (auteur/organisme, titre, année, URL si disponible) et ajoute une section « Références ».
 
 6. **Contrôle.** Relis le wikitext en comparant aux sources : aucun chiffre ni affirmation qui ne soit dans les PDF ; signale à l'utilisateur les points ambigus ou contradictoires entre documents.

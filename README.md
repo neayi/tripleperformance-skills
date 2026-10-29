@@ -14,7 +14,8 @@ Les skills s'appuient sur des outils en ligne de commande : la CLI [`mediawiki`]
 | `article-depuis-pdf` | Rédige un article à partir d'un ou plusieurs PDF (comptes rendus d'essais, fiches techniques…). | « Fais un article à partir de ces deux PDF de la chambre d'agriculture. » |
 | `traduction` | Traduit une page d'une version linguistique du wiki vers une autre. | « Traduis la page Ferme des Pâtures en anglais. » |
 | `tableau-depuis-image` | Convertit une image de tableau en tableau wiki natif. | « Transforme cette capture de tableau en tableau wiki. » |
-| `graphique-depuis-image` | Convertit une image de graphique en graphique natif ECharts. | « Refais ce graphique en ECharts. » |
+| `graphiques` | Crée ou modifie les graphiques d'une page (assolement, histogramme, radar, ombrothermique…) et les rotations et itinéraires techniques au format TIKA, stockés en sous-pages JSON. | « Ajoute la rotation type de la ferme sous forme de frise avec les interventions. » |
+| `graphique-depuis-image` | Convertit une image de graphique en graphique natif (ECharts ou rotation TIKA). | « Refais ce graphique en ECharts. » |
 | `images` | Nomme, convertit, redimensionne et place les images d'un article ; choisit l'image d'illustration du modèle. | « Ajoute ces photos à l'article et choisis l'image principale. » |
 | `video-youtube` | Importe une vidéo YouTube : fiche Vidéo, vignette, transcription et article mis en forme. | « Importe cette vidéo : https://www.youtube.com/watch?v=KZ5Tz3IGoSI » |
 

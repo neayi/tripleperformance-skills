@@ -61,7 +61,7 @@ Pour lire ou produire un fichier Excel (`.xlsx`), utilise le module `openpyxl`, 
 - Un article commence par l'appel d'un modèle de page (`{{Pratique ...}}`, `{{Portrait de ferme ...}}`, `{{Culture ...}}`…) dont les paramètres alimentent Semantic MediaWiki ; ce modèle pose aussi les catégories. Les modèles disponibles sont listés dans `Catégorie:Modèles de catégories`.
 - **Paragraphe introductif obligatoire.** Juste après le modèle de page et avant le premier titre `==`, écris un paragraphe d'introduction : c'est lui que l'extension Description2 reprend comme description de la page (balises `description` et `og:description`), affichée quand l'article est partagé (réseaux sociaux, messageries) et dans les moteurs de recherche. Elle est tronquée vers 300 caractères : la première ou les deux premières phrases doivent dire à elles seules de quoi parle la page et ce qu'elle a d'intéressant (qui, quoi, où, résultat). Texte simple uniquement — ni image, ni modèle, ni liste, ni tableau avant ce paragraphe. Seule exception : les pages Vidéo, dont le résumé est dans le modèle (skill `video-youtube`).
 - Le corps est en wikitext : titres `==`, listes `*`, liens internes `[[Titre]]` ou `[[Titre|texte]]`, références `<ref>...</ref>` puis `{{Références}}` ou `<references />` en fin de page.
-- Les graphiques utilisent l'extension ECharts : voir la skill `graphique-depuis-image`.
+- Les graphiques (ECharts, rotations et itinéraires techniques TIKA) sont stockés en sous-pages JSON (`<Page>/<Nom>.json`) et appelés par `{{Graphique Triple Performance}}` : voir la skill `graphiques`.
 - **N'ajoute pas toi-même de liens internes** vers les articles du wiki : une fois la page en ligne, l'extension LinkTitles les pose automatiquement (étape 9 des règles de publication). Restent écrits à la main seulement les liens qui font partie de la structure : liens interlangues, images (`[[Fichier:...]]`), catégories, et ceux que l'utilisateur demande explicitement. Vérifie ces titres en une fois avec `search.py --exists "Titre 1" "Titre 2" ...` (skill `recherche`).
 - Les liens interlangues se placent en fin de page, un par langue : `[[en:STIR]]`. Ils sont réciproques (la page anglaise porte `[[fr:...]]`) et peuvent viser une redirection. Voir la skill `traduction`.
 
@@ -96,6 +96,8 @@ Le titre suit des règles propres à chaque type de page (nom d'action pour un r
    ```
 
    La CLI se charge du jeton et du POST ; l'utilisateur doit être connecté. Montre les liens ajoutés à l'utilisateur. Si l'un d'eux est hors sujet (homonyme, lien dans une citation), propose de le retirer : c'est une nouvelle modification, à faire valider comme les autres. Si la page cible est un homonyme courant (ex. `Verse`, `Rouille`, `Test`), propose aussi d'ajouter `__NOAUTOLINKTARGET__` en fin de page cible (redirections comprises) pour que LinkTitles ne la vise plus ; l'API `prop=pageprops` doit alors renvoyer `MAG_LINKTITLES_NOTARGET`.
+
+   Pour qu'un passage ne reçoive jamais de liens (ex. un terme coupé en deux liens, `[[Limon]] [[argileux]]`), entoure-le de `<noautolinks>...</noautolinks>` : retirer le lien ne suffit pas, LinkTitles le repose au passage suivant. Relancé sur une page déjà traitée, LinkTitles peut ajouter un second lien vers une page déjà reliée (ex. deux fois `cultures` dans le même paragraphe) : signale-le, sans relancer en boucle.
 
 ## Améliorer cette skill
 

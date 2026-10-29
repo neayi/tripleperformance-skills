@@ -63,18 +63,13 @@ Une affirmation<ref>Auteur, ''Titre'', éditeur, année. [https://... lien]</ref
 |}
 ```
 
-## Graphiques ECharts
+## Graphiques
 
 ```
-{{#echarts:
-  title=Titre du graphique
-| width=100%
-| height=400px
-| option = { ... JSON d'options ECharts ... }
-}}
+{{Graphique Triple Performance| title=Assolement 2022 | type = Assolement | width=100% | height=400px | json = Ma page/Assolement 2022.json }}
 ```
 
-Détails dans la skill `graphique-depuis-image`.
+Les données sont dans la sous-page JSON (modèle de contenu `json`) : options ECharts ou rotation TIKA. Les pages anciennes contiennent aussi des appels `{{#echarts: ... | option = {...} }}` en ligne. Détails dans la skill `graphiques`.
 
 ## Modèles utiles
 

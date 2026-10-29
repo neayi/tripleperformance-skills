@@ -24,7 +24,7 @@ Applique les règles de la skill `conventions`.
    - **Liens interlangues existants** : retire de la traduction la ligne `[[<cible>:...]]` de la source (une page ne pointe pas vers sa propre langue) ; les autres (`[[de:...]]`…) peuvent être conservées.
    - **Fichiers** : les images sont-elles disponibles sur le wiki cible ? Sinon, liste-les pour téléversement (avec accord).
    - **Espaces de noms** : `Catégorie:` → `Category:`, `Fichier:` → `File:`, etc.
-   - **Graphiques ECharts** : traduis les textes (`title`, `name`, libellés d'axes, légendes) dans le JSON sans toucher à la structure.
+   - **Graphiques** : les sous-pages JSON appelées par `{{Graphique Triple Performance|...|json=...}}` n'existent pas sur le wiki cible. Crée-les sous le titre traduit (`<Titre traduit>/<Nom traduit>.json`), en traduisant les textes (titres, noms d'étapes et d'interventions, descriptions, axes, légendes) sans toucher aux dates, valeurs, couleurs ni `id`, et mets à jour le paramètre `json` de l'appel (skill `graphiques`). Pour un `{{#echarts:}}` en ligne, traduis les textes dans le JSON sans toucher à la structure.
 
 4. **Traduis** dans `tp-travail/<sujet>/<lang>.wiki` :
    - titre : traduis-le en respectant les règles de titre du type de page (`conventions`, `references/titres.md`) — infinitif pour une fiche technique, nom d'action pour un retour d'expérience, nom au singulier pour un concept ; les noms de ferme et titres de livres publiés ne se traduisent pas (sauf édition existante dans la langue cible) ;
