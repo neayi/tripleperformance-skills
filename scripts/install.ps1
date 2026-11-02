@@ -197,11 +197,12 @@ function Show-FirstSteps {
 
 # La nouvelle fenêtre hérite du PATH rechargé par ce script
 function Open-Claude {
-    if ($Yes -or [Console]::IsInputRedirected) { return }
+    $folders = @($SkillEntries | Where-Object { $_.projectPath })
+    if ($Check -or $Yes -or $folders.Count -eq 0 -or [Console]::IsInputRedirected) { return }
     Write-Host ''
     $answer = Read-Host 'Ouvrir Claude Code maintenant dans votre dossier de travail ? [O/n]'
     if ($answer -match '^(|o|oui|y|yes)$') {
-        Start-Process powershell -WorkingDirectory $SkillEntries[0].projectPath -ArgumentList '-NoExit', '-Command', 'claude'
+        Start-Process powershell -WorkingDirectory $folders[0].projectPath -ArgumentList '-NoExit', '-Command', 'claude'
     }
 }
 
@@ -295,6 +296,7 @@ if ($Missing.Count -eq 0 -and $SkillState -ne 'missing' -and ($SkillState -ne 'u
         Write-Host "Mise à jour des skills disponible : relancez le script d'installation (sans -Check)."
     }
     Show-WorkdirHint
+    Open-Claude
     exit 0
 }
 
@@ -375,8 +377,8 @@ if ($StillMissing.Count -gt 0 -or $SkillState -eq 'missing') {
 Write-Host 'Installation terminée.' -ForegroundColor Green
 if ($SkillsInstalled -and $SkillEntries.Count -gt 0) {
     Show-FirstSteps
-    Open-Claude
 } else {
     Write-Host 'Ouvrez un NOUVEAU terminal pour utiliser ces outils : celui-ci garde son ancien PATH.'
     Show-WorkdirHint
 }
+Open-Claude

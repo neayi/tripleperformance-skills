@@ -35,6 +35,8 @@ EOF
   shift
 done
 
+CHECK_REQUESTED="$CHECK_ONLY"
+
 MEDIAWIKI_INSTALLER="https://raw.githubusercontent.com/neayi/Mediawiki-LLM-Cli/main/install.sh"
 # Les paquets yt-dlp des distributions sont souvent trop anciens pour YouTube :
 # on installe l'exécutable officiel, qui se met à jour avec `yt-dlp -U`.
@@ -242,8 +244,10 @@ show_first_steps() {
 # Le script a déjà le bon PATH : claude démarre ici, sans nouveau terminal
 offer_claude() {
   local answer="" scope version dir
-  if [ "$ASSUME_YES" -eq 1 ] || [ ! -t 0 ] || [ ! -t 1 ]; then return 0; fi
+  if [ "$CHECK_REQUESTED" -eq 1 ] || [ "$ASSUME_YES" -eq 1 ] || [ ! -t 0 ] || [ ! -t 1 ]; then return 0; fi
+  [ "${#SKILL_ENTRIES[@]}" -gt 0 ] || return 0
   IFS='|' read -r scope version dir <<<"${SKILL_ENTRIES[0]}"
+  [ -n "$dir" ] || return 0
   info ""
   printf 'Lancer Claude Code maintenant dans votre dossier de travail ? [O/n] '
   read -r answer
@@ -348,10 +352,10 @@ check_tools() {
     fi
     if [ "$SKILLS_INSTALLED" -eq 1 ]; then
       show_first_steps
-      offer_claude
     else
       show_workdir_hint
     fi
+    offer_claude
     exit 0
   fi
 
