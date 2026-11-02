@@ -4,6 +4,16 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ## Non publié
 
+## 0.2.2 - 2026-11-02
+
+### Corrigé
+
+- `search.py` : sortie en UTF-8, pour que les accents restent intacts sous Windows.
+
+### Modifié
+
+- `video-youtube` : ne demande plus la licence de la vignette, le site étant sous CC-BY-SA 4.0.
+
 ## 0.2.1 - 2026-11-02
 
 ### Corrigé

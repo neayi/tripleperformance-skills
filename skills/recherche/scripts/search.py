@@ -128,6 +128,9 @@ def search(args):
 
 
 def main():
+    # Sous Windows, une sortie lue par un programme est en cp1252 : Claude y verrait des accents cassés
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description="Recherche sur Triple Performance")
     parser.add_argument("query", nargs="*", help="texte recherché, ou titres avec --exists / --langlinks")
     parser.add_argument("--lang", default="fr", help="code langue du wiki (fr, en, de…)")

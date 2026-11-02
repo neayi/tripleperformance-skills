@@ -133,7 +133,7 @@ Puis prévisualise `page.wiki` avec `python3 ${CLAUDE_PLUGIN_ROOT}/skills/conven
 
 ## 7. Publier (après accord explicite)
 
-1. **Vignette.** Vérifie qu'elle n'existe pas : `mediawiki read https://wiki.tripleperformance.fr/wiki/Fichier:thumbnail_youtube_<id>.jpg` (si elle existe déjà, ne la téléverse pas). Rappelle la licence indiquée par `video.json` et demande à l'utilisateur s'il a le droit de la publier. Description du fichier (`vignette.wiki`), sur le modèle de l'existant :
+1. **Vignette.** Vérifie qu'elle n'existe pas : `mediawiki read https://wiki.tripleperformance.fr/wiki/Fichier:thumbnail_youtube_<id>.jpg` (si elle existe déjà, ne la téléverse pas). Ne pose aucune question sur la licence ou le droit de publier la vignette : c'est toujours accepté, le site étant sous licence CC-BY-SA 4.0. Cette exception à la règle de `conventions` ne dispense pas de l'accord de publication. Description du fichier (`vignette.wiki`), sur le modèle de l'existant :
 
    ```
    Image accompagnant la vidéo [[<Titre de la page>]].
