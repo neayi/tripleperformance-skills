@@ -10,7 +10,7 @@ Applique les règles de la skill `conventions`. Les fichiers de travail vont dan
 ## 1. Récupérer la vidéo
 
 ```bash
-python3 <dossier-de-cette-skill>/scripts/youtube.py "<url-youtube>"
+python3 ${CLAUDE_SKILL_DIR}/scripts/youtube.py "<url-youtube>"
 ```
 
 Le script vérifie d'abord si la vidéo est déjà sur le wiki, en interrogeant la propriété Semantic MediaWiki `A une URL de vidéo` :
@@ -45,7 +45,7 @@ Le script propose `titre_page` : caractères interdits (`# < > [ ] | { } _`) et 
 - ne garde pas de mots isolés en capitales sauf les sigles (`SEGUY` → `Séguy`, mais `CIRAD`, `MSV` restent) ;
 - retire les fioritures sans intérêt pour un titre de wiki (« [REPLAY] », « 🔴 LIVE », numéro d'épisode seul) si l'utilisateur est d'accord.
 
-Vérifie qu'aucune autre page ne porte déjà ce titre : `search.py --exists "<titre>"` (skill `recherche`). Si c'est le cas, propose un titre distinct à l'utilisateur.
+Vérifie qu'aucune autre page ne porte déjà ce titre : `python3 ${CLAUDE_PLUGIN_ROOT}/skills/recherche/scripts/search.py --exists "<titre>"` (skill `recherche`). Si c'est le cas, propose un titre distinct à l'utilisateur.
 
 ## 3. Remplir le modèle Vidéo
 
@@ -80,7 +80,7 @@ Règles champ par champ :
 - **Date de mise en ligne** : `date` de `video.json` (`YYYY-MM-DD`).
 - **Durée** : `duree` de `video.json` (ex. `199 minutes`).
 - **Vidéo** : URL au format `https://www.youtube.com/watch?v=<id>`, jamais `youtu.be` ni paramètres en plus.
-- **Mots-clés** : 5 à 10 notions agronomiques réellement traitées dans la transcription, séparées par des virgules, chacune commençant par une majuscule (`Couverts végétaux, Semis direct, Potentiel redox`). Reprends de préférence des intitulés de pages existantes du wiki (vérifie avec `search.py --exists`).
+- **Mots-clés** : 5 à 10 notions agronomiques réellement traitées dans la transcription, séparées par des virgules, chacune commençant par une majuscule (`Couverts végétaux, Semis direct, Potentiel redox`). Reprends de préférence des intitulés de pages existantes du wiki (vérifie avec `python3 ${CLAUDE_PLUGIN_ROOT}/skills/recherche/scripts/search.py --exists`).
 - **Résumé** : 150 à 200 mots, en un seul paragraphe, qui résume le contenu de la transcription (pas la description YouTube). Tu peux utiliser du wikitext (gras, italique), mais pas de retour à la ligne, sans `|` ni `}}`, sans lien.
 
 ## 4. Transcription brute
@@ -129,7 +129,7 @@ pathlib.Path('page.wiki').write_text(page, encoding='utf-8')
 "
 ```
 
-Puis prévisualise `page.wiki` avec `preview.py` (skill `conventions`) et montre à l'utilisateur : le modèle rempli, le plan de l'article (titres), le nombre de mots du corps, et le chemin du fichier complet. Signale les noms propres corrigés dont tu n'es pas sûr.
+Puis prévisualise `page.wiki` avec `python3 ${CLAUDE_PLUGIN_ROOT}/skills/conventions/scripts/preview.py` (skill `conventions`) et montre à l'utilisateur : le modèle rempli, le plan de l'article (titres), le nombre de mots du corps, et le chemin du fichier complet. Signale les noms propres corrigés dont tu n'es pas sûr.
 
 ## 7. Publier (après accord explicite)
 

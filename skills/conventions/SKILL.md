@@ -29,6 +29,7 @@ mediawiki rename <url-page> <nouvelle-url> --reason "..."
 
 - `mediawiki read` sert aussi à tester l'existence d'une page (code de sortie 1 si absente).
 - Les commandes d'écriture échouent avec `not logged in to <wiki>` si l'utilisateur n'est pas connecté : propose-lui alors de lancer `! mediawiki login <url-du-wiki>`.
+- Sous Windows, `python3` ouvre le raccourci du Microsoft Store au lieu de Python : remplace `python3` par `python` (ou `py`) dans toutes les commandes des skills.
 - Il n'y a pas de commande de recherche : utilise la skill `recherche` ou l'API (`action=query&list=search`).
 
 ### ImageMagick
@@ -62,7 +63,7 @@ Pour lire ou produire un fichier Excel (`.xlsx`), utilise le module `openpyxl`, 
 - **Paragraphe introductif obligatoire.** Juste après le modèle de page et avant le premier titre `==`, écris un paragraphe d'introduction : c'est lui que l'extension Description2 reprend comme description de la page (balises `description` et `og:description`), affichée quand l'article est partagé (réseaux sociaux, messageries) et dans les moteurs de recherche. Elle est tronquée vers 300 caractères : la première ou les deux premières phrases doivent dire à elles seules de quoi parle la page et ce qu'elle a d'intéressant (qui, quoi, où, résultat). Texte simple uniquement — ni image, ni modèle, ni liste, ni tableau avant ce paragraphe. Seule exception : les pages Vidéo, dont le résumé est dans le modèle (skill `video-youtube`).
 - Le corps est en wikitext : titres `==`, listes `*`, liens internes `[[Titre]]` ou `[[Titre|texte]]`, références `<ref>...</ref>` puis `{{Références}}` ou `<references />` en fin de page.
 - Les graphiques (ECharts, rotations et itinéraires techniques TIKA) sont stockés en sous-pages JSON (`<Page>/<Nom>.json`) et appelés par `{{Graphique Triple Performance}}` : voir la skill `graphiques`.
-- **N'ajoute pas toi-même de liens internes** vers les articles du wiki : une fois la page en ligne, l'extension LinkTitles les pose automatiquement (étape 9 des règles de publication). Restent écrits à la main seulement les liens qui font partie de la structure : liens interlangues, images (`[[Fichier:...]]`), catégories, et ceux que l'utilisateur demande explicitement. Vérifie ces titres en une fois avec `search.py --exists "Titre 1" "Titre 2" ...` (skill `recherche`).
+- **N'ajoute pas toi-même de liens internes** vers les articles du wiki : une fois la page en ligne, l'extension LinkTitles les pose automatiquement (étape 9 des règles de publication). Restent écrits à la main seulement les liens qui font partie de la structure : liens interlangues, images (`[[Fichier:...]]`), catégories, et ceux que l'utilisateur demande explicitement. Vérifie ces titres en une fois avec `python3 ${CLAUDE_PLUGIN_ROOT}/skills/recherche/scripts/search.py --exists "Titre 1" "Titre 2" ...` (skill `recherche`).
 - Les liens interlangues se placent en fin de page, un par langue : `[[en:STIR]]`. Ils sont réciproques (la page anglaise porte `[[fr:...]]`) et peuvent viser une redirection. Voir la skill `traduction`.
 
 Pour le détail des éléments de mise en page, voir [references/wikitext.md](references/wikitext.md).
@@ -75,10 +76,10 @@ Le titre suit des règles propres à chaque type de page (nom d'action pour un r
 
 1. **Lire avant d'écrire.** Avant de modifier une page existante, récupère sa version actuelle avec `mediawiki read`.
 2. **Écrire en local d'abord.** Produis le wikitext complet dans `tp-travail/`.
-3. **Prévisualiser sans enregistrer.** Fais rendre le wikitext complet par l'API avec le script `scripts/preview.py` de cette skill :
+3. **Prévisualiser sans enregistrer.** Fais rendre le wikitext complet par l'API avec le script `${CLAUDE_SKILL_DIR}/scripts/preview.py` de cette skill :
 
    ```bash
-   python3 <dossier-de-la-skill-conventions>/scripts/preview.py tp-travail/<sujet>/page.wiki --title "<Titre de la page>" [--lang en]
+   python3 ${CLAUDE_SKILL_DIR}/scripts/preview.py tp-travail/<sujet>/page.wiki --title "<Titre de la page>" [--lang en]
    ```
 
    Il signale les erreurs de références (`<ref>` sans contenu, doublons), les erreurs de modèles ou de parser functions, les liens rouges et les avertissements de l'analyseur (code de sortie 1). Corrige-les avant de montrer le résultat, ou explique à l'utilisateur pourquoi un lien rouge est volontaire. `--html apercu.html` enregistre le rendu pour qu'il puisse l'ouvrir dans un navigateur.

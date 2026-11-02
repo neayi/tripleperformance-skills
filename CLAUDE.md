@@ -27,6 +27,7 @@ claude --plugin-dir .                 # lance Claude Code avec le plugin de ce d
 ## Règles pour écrire ou modifier une skill
 
 - Le frontmatter de `SKILL.md` contient `name` (kebab-case, identique au nom du dossier) et `description`. La description dit **ce que fait la skill et quand l'utiliser**, avec les formulations qu'un contributeur emploierait ; c'est elle qui déclenche la skill.
+- Dans `SKILL.md`, un script se cite par son chemin complet : `${CLAUDE_SKILL_DIR}/scripts/…`, ou `${CLAUDE_PLUGIN_ROOT}/skills/<skill>/scripts/…` pour une autre skill. Ces variables ne sont pas remplacées dans `references/`. `validate_skills.py` refuse les étiquettes `<dossier…>`.
 - `SKILL.md` reste sous 500 lignes. Les détails (syntaxe ECharts, liste des modèles…) vont dans `references/` et sont liés depuis `SKILL.md` par un lien relatif.
 - Les connaissances communes à plusieurs skills vont dans `skills/conventions/`, pas en copie dans chaque skill. Les autres skills y renvoient.
 - Les scripts d'assistance sont en Python 3, bibliothèque standard uniquement, ou en bash portable. Seule exception documentée : `openpyxl` (installé par les scripts d'installation) pour les fichiers Excel. Ils doivent fonctionner sous Linux, macOS et Windows (Git Bash) : pas de chemins codés en dur, pas de dépendance `pip`.

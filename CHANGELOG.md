@@ -4,8 +4,16 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ## Non publié
 
+## 0.2.1 - 2026-11-02
+
+### Corrigé
+
+- Skills : scripts cités par `${CLAUDE_SKILL_DIR}` et `${CLAUDE_PLUGIN_ROOT}`, pour que Claude n'ait plus à les chercher dans le cache du plugin ; `validate_skills.py` refuse les anciennes étiquettes.
+- Windows : consigne d'utiliser `python` ou `py`, car `python3` ouvre le raccourci du Microsoft Store.
+
 ### Modifié
 
+- `install.sh`, `install.ps1` : autorisent la lecture du cache du plugin depuis le dossier de travail.
 - `install.sh`, `install.ps1` : proposent de lancer Claude Code à chaque lancement sans vérification seule, pas seulement à la première installation.
 - README : badge de la CI.
 - `install.sh`, `install.ps1` : proposent de lancer Claude Code dans le dossier de travail à la fin de la première installation (même terminal sous Linux et macOS, nouvelle fenêtre sous Windows).

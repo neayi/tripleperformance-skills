@@ -161,6 +161,28 @@ function Read-Skills {
     }
 }
 
+# Les références du plugin sont dans son cache : sans cela, chaque lecture demanderait l'autorisation
+function Grant-PluginRead {
+    foreach ($entry in $SkillEntries) {
+        if (-not $entry.projectPath -or -not $entry.installPath) { continue }
+        try {
+            $cache = (Split-Path (Split-Path $entry.installPath)) -replace '\\', '/'
+            $file = Join-Path $entry.projectPath '.claude\settings.local.json'
+            $settings = New-Object PSObject
+            if (Test-Path -LiteralPath $file) {
+                $settings = Get-Content -LiteralPath $file -Raw -Encoding UTF8 | ConvertFrom-Json
+            }
+            if (-not $settings.permissions) { $settings | Add-Member permissions (New-Object PSObject) }
+            $folders = @($settings.permissions.additionalDirectories | Where-Object { $_ })
+            if ($folders -contains $cache) { continue }
+            $settings.permissions | Add-Member additionalDirectories @($folders + $cache) -Force
+            [IO.File]::WriteAllText($file, ($settings | ConvertTo-Json -Depth 20), (New-Object Text.UTF8Encoding($false)))
+        } catch {
+            Write-Host '  Autorisation de lecture du plugin non ajoutée.' -ForegroundColor Yellow
+        }
+    }
+}
+
 function Show-Skills {
     Read-Skills
     if ($SkillState -eq 'missing') {
@@ -231,6 +253,7 @@ Ce dossier sert à contribuer à Triple Performance (https://wiki.tripleperforma
 - Sauf indication contraire, mes demandes concernent ce wiki : utilise les skills Triple Performance.
 - Réponds en français, sans jargon technique.
 - Je dépose ici mes PDF, images et fichiers Excel.
+- Sous Windows, lance les scripts Python avec `python` (ou `py`) : `python3` ouvre le Microsoft Store.
 '@
     [IO.File]::WriteAllText($file, $text, (New-Object Text.UTF8Encoding($false)))
 }
@@ -358,6 +381,8 @@ Update-SessionPath
 Read-Skills
 if ($SkillState -eq 'missing' -and (Find-Command @('claude'))) { Install-Skills }
 elseif ($SkillState -eq 'update') { Update-Skills }
+Read-Skills
+Grant-PluginRead
 
 Write-Host ''
 Write-Host 'Vérification finale :'

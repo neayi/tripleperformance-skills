@@ -14,7 +14,7 @@ Applique les règles de la skill `conventions`.
 2. **Choisis le modèle.** Liste les modèles disponibles :
 
    ```bash
-   python3 <dossier-skill-recherche>/scripts/search.py --category "Modèles de catégories" --limit 50
+   python3 ${CLAUDE_PLUGIN_ROOT}/skills/recherche/scripts/search.py --category "Modèles de catégories" --limit 50
    ```
 
    Propose le plus adapté à l'utilisateur et fais-le confirmer s'il y a un doute (ex. « Pratique » vs « Exemple de mise en œuvre »). Pour une vidéo YouTube, utilise plutôt la skill `video-youtube`.
@@ -25,7 +25,7 @@ Applique les règles de la skill `conventions`.
    - **deux ou trois articles existants** utilisant ce modèle, de préférence bien remplis, comme exemples de ton, de plan et de remplissage des champs :
 
      ```bash
-     python3 <dossier-skill-recherche>/scripts/search.py --template "<Modèle>" --limit 20
+     python3 ${CLAUDE_PLUGIN_ROOT}/skills/recherche/scripts/search.py --template "<Modèle>" --limit 20
      ```
 
 4. **Rassemble le contenu.** Demande à l'utilisateur ses sources (notes, PDF → skill `article-depuis-pdf`, liens, témoignages) et les informations manquantes pour les champs obligatoires. N'invente pas de données chiffrées ni de témoignages.

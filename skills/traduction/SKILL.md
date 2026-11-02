@@ -15,10 +15,10 @@ Applique les règles de la skill `conventions`.
    mediawiki read "https://wiki.tripleperformance.fr/wiki/<Titre>" > tp-travail/<sujet>/source.wiki
    ```
 
-2. **Vérifie que la page n'existe pas déjà dans la langue cible.** Regarde d'abord ses liens interlangues : `search.py --langlinks "<Titre>"` (ou la ligne `[[<cible>:...]]` en fin de wikitext). Sinon, recherche le titre traduit et ses variantes avec `search.py --lang <cible>`. Si la page existe, demande s'il faut la mettre à jour (et montre un diff).
+2. **Vérifie que la page n'existe pas déjà dans la langue cible.** Regarde d'abord ses liens interlangues : `python3 ${CLAUDE_PLUGIN_ROOT}/skills/recherche/scripts/search.py --langlinks "<Titre>"` (ou la ligne `[[<cible>:...]]` en fin de wikitext). Sinon, recherche le titre traduit et ses variantes avec `python3 ${CLAUDE_PLUGIN_ROOT}/skills/recherche/scripts/search.py --lang <cible>`. Si la page existe, demande s'il faut la mettre à jour (et montre un diff).
 
 3. **Inventorie ce qui ne se traduit pas mot à mot :**
-   - **Modèle de page et noms de paramètres** : sur les wikis non francophones, les **noms de paramètres restent en français** et seules les valeurs sont traduites (ex. sur en.tripleperformance.ag : `|Type de production=Field crops`, `|Mots-clés=Cover crops, ...`). Vérifie toujours sur un article exemple du wiki cible (`search.py --template <Nom> --lang <cible>` puis `mediawiki read`).
+   - **Modèle de page et noms de paramètres** : sur les wikis non francophones, les **noms de paramètres restent en français** et seules les valeurs sont traduites (ex. sur en.tripleperformance.ag : `|Type de production=Field crops`, `|Mots-clés=Cover crops, ...`). Vérifie toujours sur un article exemple du wiki cible (`python3 ${CLAUDE_PLUGIN_ROOT}/skills/recherche/scripts/search.py --template <Nom> --lang <cible>` puis `mediawiki read`).
    - **Valeurs de paramètres sémantiques** (type de production, objectif…) : utilise les valeurs existantes sur le wiki cible.
    - **Liens internes** : ne les transpose pas. Remplace chaque `[[Page]]` ou `[[Page|texte]]` de la source par son texte traduit, sans lien : LinkTitles posera les liens vers les pages du wiki cible après publication (voir `conventions`). Seuls les liens structurels (images, catégories, interlangues) sont adaptés à la main.
    - **Liens interlangues existants** : retire de la traduction la ligne `[[<cible>:...]]` de la source (une page ne pointe pas vers sa propre langue) ; les autres (`[[de:...]]`…) peuvent être conservées.
@@ -40,7 +40,7 @@ Applique les règles de la skill `conventions`.
 7. **Relie les deux versions** par des liens interlangues réciproques, placés en fin de page :
    - dans la traduction, avant publication : `[[<langue source>:<Titre source>]]` (ex. `[[fr:Soil Tillage Intensity Rating (STIR)]]`) ;
    - sur la page source, après publication de la traduction : ajoute `[[<cible>:<Titre traduit>]]` en fin de page, s'il n'y est pas déjà. C'est une modification de la page source : relis-la juste avant, montre le diff et publie après accord, avec un résumé du type « Ajout du lien interlangue vers la version anglaise ».
-   - Vérifie le résultat avec `search.py --langlinks` sur les deux wikis.
+   - Vérifie le résultat avec `python3 ${CLAUDE_PLUGIN_ROOT}/skills/recherche/scripts/search.py --langlinks` sur les deux wikis.
 
    Exemple existant : `Soil Tillage Intensity Rating (STIR)` (fr) porte `[[en:STIR]]`, et `STIR` (en) porte `[[fr:STIR]]`, qui est une redirection vers la page française. Les liens vers une redirection fonctionnent, mais vise de préférence le titre réel.
 

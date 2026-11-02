@@ -49,7 +49,7 @@ Détails de chaque format : [references/echarts.md](references/echarts.md) (gaba
 Pour une page existante, liste ses graphiques et vérifie leurs sous-pages :
 
 ```bash
-python3 <dossier-de-cette-skill>/scripts/graphique.py liste "Ferme de Longueil" [--lang en]
+python3 ${CLAUDE_SKILL_DIR}/scripts/graphique.py liste "Ferme de Longueil" [--lang en]
 ```
 
 Le script indique pour chaque graphique le modèle ou la parser function utilisés, la sous-page JSON et son état (`json`, `absente`, ou un modèle de contenu inattendu). Un graphique dont la sous-page est absente n'apparaît pas pour les lecteurs (l'extension propose seulement aux contributeurs connectés de le créer).
@@ -93,8 +93,8 @@ et travaille sur une copie. Conserve les `id` existants des étapes et intervent
 ### 5. Vérifier et prévisualiser
 
 ```bash
-python3 <dossier-de-cette-skill>/scripts/graphique.py verifie tp-travail/<sujet>/rotation.json
-python3 <dossier-de-cette-skill>/scripts/graphique.py apercu tp-travail/<sujet>/rotation.json -o tp-travail/<sujet>/apercu.html
+python3 ${CLAUDE_SKILL_DIR}/scripts/graphique.py verifie tp-travail/<sujet>/rotation.json
+python3 ${CLAUDE_SKILL_DIR}/scripts/graphique.py apercu tp-travail/<sujet>/rotation.json -o tp-travail/<sujet>/apercu.html
 ```
 
 - `verifie` détecte le format comme le fait l'extension, signale le JSON invalide et, pour TIKA, les dates illisibles ou inversées, les chevauchements d'étapes principales, les interventions mal typées, les données climatiques incomplètes, les rotations de plus de 20 ans (non affichées). Corrige les erreurs ; explique les avertissements que tu laisses.
@@ -104,7 +104,7 @@ python3 <dossier-de-cette-skill>/scripts/graphique.py apercu tp-travail/<sujet>/
 
 - Graphique nouveau : montre un résumé lisible (étapes et interventions, ou séries et valeurs), le chemin du JSON et de l'aperçu, le titre de la sous-page et la ligne d'appel du modèle.
 - Graphique existant : montre `diff -u rotation.avant.json rotation.json` (formate d'abord les deux fichiers avec `jq .` pour un diff lisible).
-- Si l'appel du modèle doit être ajouté ou modifié dans l'article, prépare aussi le wikitext de l'article et son diff, et passe-le par `preview.py` de `conventions`.
+- Si l'appel du modèle doit être ajouté ou modifié dans l'article, prépare aussi le wikitext de l'article et son diff, et passe-le par `python3 ${CLAUDE_PLUGIN_ROOT}/skills/conventions/scripts/preview.py` de `conventions`.
 
 Attends un accord explicite avant toute écriture.
 
@@ -118,7 +118,7 @@ mediawiki write --content-model=json "https://wiki.tripleperformance.fr/wiki/<Pa
 
 Puis, si besoin, l'article avec l'appel du modèle (règles de publication de `conventions`, LinkTitles compris). Ensuite :
 
-- vérifie le modèle de contenu : `python3 <dossier-de-cette-skill>/scripts/graphique.py liste "<Page>"` doit afficher `[json]` ;
+- vérifie le modèle de contenu : `python3 ${CLAUDE_SKILL_DIR}/scripts/graphique.py liste "<Page>"` doit afficher `[json]` ;
 - si l'article affiche encore l'ancienne version, le cache est en cause : purge la page (`mediawiki api "<base>/api.php?action=purge&titles=<Page>"`) ;
 - donne l'URL de l'article, et pour une rotation TIKA le lien de l'éditeur visuel, où l'utilisateur peut retoucher le graphique à la souris : `https://wiki.tripleperformance.fr/extensions/ECharts/editor/editor.html?wiki=<Titre de la sous-page encodé>`.
 

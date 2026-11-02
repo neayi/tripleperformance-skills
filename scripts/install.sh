@@ -177,6 +177,27 @@ for e in json.load(sys.stdin):
         print("|".join((e.get("scope", ""), e.get("version", ""), path)))
 '
 
+# Les références du plugin sont dans son cache : sans cela, chaque lecture demanderait l'autorisation
+SKILL_GRANT='
+import json, os, sys
+for e in json.load(sys.stdin):
+    folder, install = e.get("projectPath"), e.get("installPath")
+    if e.get("id") != sys.argv[1] or not folder or not install or not os.path.isdir(folder):
+        continue
+    cache = os.path.dirname(os.path.dirname(install))
+    path = os.path.join(folder, ".claude", "settings.local.json")
+    settings = {}
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            settings = json.load(f)
+    folders = settings.setdefault("permissions", {}).setdefault("additionalDirectories", [])
+    if cache not in folders:
+        folders.append(cache)
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(settings, f, ensure_ascii=False, indent=2)
+            f.write("\n")
+'
+
 read_skills() {
   local list parsed line scope version dir
   SKILL_ENTRIES=()
@@ -200,6 +221,14 @@ read_skills() {
     IFS='|' read -r scope version dir <<<"$line"
     if [ -n "$LATEST_VERSION" ] && [ "$version" != "$LATEST_VERSION" ]; then SKILL_STATE=update; fi
   done
+}
+
+grant_plugin_read() {
+  local list
+  if ! list="$(claude plugin list --json 2>/dev/null)" \
+    || ! printf '%s' "$list" | python3 -c "$SKILL_GRANT" "$PLUGIN_ID"; then
+    warn "Autorisation de lecture du plugin non ajoutée."
+  fi
 }
 
 show_skills() {
@@ -497,6 +526,7 @@ case "$SKILL_STATE" in
   missing) install_skills ;;
   update)  update_skills ;;
 esac
+if has_any claude python3; then grant_plugin_read; fi
 
 info ""
 info "Installation terminée. Vérification finale :"

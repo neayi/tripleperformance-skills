@@ -24,6 +24,6 @@ Applique les règles de la skill `conventions`. Cette skill couvre la lecture de
    - ajoute `tooltip`, une `legend` s'il y a plusieurs séries, les unités dans `name` des axes ou dans un `formatter` ;
    - textes en langue du wiki cible.
 
-5. **Vérifie, prévisualise et publie** selon la skill `graphiques` (`graphique.py verifie`, `graphique.py apercu`, sous-page JSON publiée avec `--content-model=json`, appel `{{Graphique Triple Performance}}` dans l'article).
+5. **Vérifie, prévisualise et publie** selon la skill `graphiques` (`python3 ${CLAUDE_PLUGIN_ROOT}/skills/graphiques/scripts/graphique.py verifie`, `python3 ${CLAUDE_PLUGIN_ROOT}/skills/graphiques/scripts/graphique.py apercu`, sous-page JSON publiée avec `--content-model=json`, appel `{{Graphique Triple Performance}}` dans l'article).
 
 6. **Source** : ajoute sous le graphique une ligne « Source : … » ou une `<ref>`.

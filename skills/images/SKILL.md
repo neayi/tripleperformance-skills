@@ -12,7 +12,7 @@ Applique les règles de la skill `conventions` (dossier `tp-travail/<sujet>/`, v
 Regarde chaque image (tu peux les lire directement) et lance l'analyse :
 
 ```bash
-python3 <dossier-de-cette-skill>/scripts/analyse_images.py <image1> <image2> ...
+python3 ${CLAUDE_SKILL_DIR}/scripts/analyse_images.py <image1> <image2> ...
 ```
 
 Le script donne format, dimensions, orientation, poids, nombre de couleurs, transparence, et une suggestion de traitement. C'est un indice : c'est ce que montre l'image qui décide. Classe chaque image :
@@ -38,7 +38,7 @@ Le nom du fichier doit dire ce qu'on voit dans l'image, en lien avec la page :
 Vérifie que les noms sont libres, en une fois :
 
 ```bash
-python3 <dossier-skill-recherche>/scripts/search.py --exists "Fichier:Nom 1.jpg" "Fichier:Nom 2.png"
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/recherche/scripts/search.py --exists "Fichier:Nom 1.jpg" "Fichier:Nom 2.png"
 ```
 
 Si un fichier du même nom existe, regarde s'il s'agit de la même image (alors réutilise-la) ; sinon, choisis un autre nom.
@@ -134,7 +134,7 @@ Après accord explicite de l'utilisateur, et seulement s'il a le droit de publie
    mediawiki upload "https://wiki.tripleperformance.fr/wiki/Fichier:<Nom explicite>.jpg" "tp-travail/<sujet>/images/<Nom explicite>.jpg" --description "tp-travail/<sujet>/images/<Nom explicite>.desc.wiki" --summary "Image pour la page <Titre>"
    ```
 
-4. Téléverse les images **avant** la page qui les utilise, puis vérifie avec `preview.py` (skill `conventions`) qu'aucun fichier n'apparaît en lien rouge.
+4. Téléverse les images **avant** la page qui les utilise, puis vérifie avec `python3 ${CLAUDE_PLUGIN_ROOT}/skills/conventions/scripts/preview.py` (skill `conventions`) qu'aucun fichier n'apparaît en lien rouge.
 
 ## À enrichir
 

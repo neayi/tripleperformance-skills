@@ -9,16 +9,16 @@ Applique les règles de la skill `conventions`.
 
 ## Outil
 
-Le script `scripts/search.py` de cette skill (chemin relatif au dossier de la skill) interroge l'API MediaWiki :
+Le script `${CLAUDE_SKILL_DIR}/scripts/search.py` interroge l'API MediaWiki :
 
 ```bash
-python3 <dossier-de-la-skill>/scripts/search.py "couverts végétaux"             # plein texte
-python3 <dossier-de-la-skill>/scripts/search.py "luzerne" --titles              # début de titre
-python3 <dossier-de-la-skill>/scripts/search.py --category "Pratiques"          # membres d'une catégorie
-python3 <dossier-de-la-skill>/scripts/search.py --template "Pratique"           # articles utilisant un modèle
-python3 <dossier-de-la-skill>/scripts/search.py "cover crops" --lang en         # autre langue
-python3 <dossier-de-la-skill>/scripts/search.py --exists "Charrue" "Houe rotative" "Fraise rotative"
-python3 <dossier-de-la-skill>/scripts/search.py --langlinks "Soil Tillage Intensity Rating (STIR)"
+python3 ${CLAUDE_SKILL_DIR}/scripts/search.py "couverts végétaux"             # plein texte
+python3 ${CLAUDE_SKILL_DIR}/scripts/search.py "luzerne" --titles              # début de titre
+python3 ${CLAUDE_SKILL_DIR}/scripts/search.py --category "Pratiques"          # membres d'une catégorie
+python3 ${CLAUDE_SKILL_DIR}/scripts/search.py --template "Pratique"           # articles utilisant un modèle
+python3 ${CLAUDE_SKILL_DIR}/scripts/search.py "cover crops" --lang en         # autre langue
+python3 ${CLAUDE_SKILL_DIR}/scripts/search.py --exists "Charrue" "Houe rotative" "Fraise rotative"
+python3 ${CLAUDE_SKILL_DIR}/scripts/search.py --langlinks "Soil Tillage Intensity Rating (STIR)"
 ```
 
 Options : `--limit N` (défaut 10), `--namespace 0|14` (articles et catégories), `--json`.

@@ -79,6 +79,15 @@ def validate_skill(skill_dir):
     return errors
 
 
+def validate_script_paths():
+    """Une étiquette n'est remplacée par rien : Claude devrait chercher le script hors du dossier de travail."""
+    errors = []
+    for path in sorted(SKILLS_DIR.glob("*/SKILL.md")):
+        if "<dossier" in path.read_text(encoding="utf-8"):
+            errors.append(f"{path.relative_to(ROOT)}: utiliser ${{CLAUDE_SKILL_DIR}} ou ${{CLAUDE_PLUGIN_ROOT}}")
+    return errors
+
+
 def validate_manifests():
     errors = []
     for manifest in ("plugin.json", "marketplace.json"):
@@ -103,6 +112,7 @@ def main():
     skill_dirs = sorted(p for p in SKILLS_DIR.iterdir() if p.is_dir())
     errors = validate_manifests()
     errors.extend(validate_powershell_encoding())
+    errors.extend(validate_script_paths())
     for skill_dir in skill_dirs:
         errors.extend(validate_skill(skill_dir))
 
