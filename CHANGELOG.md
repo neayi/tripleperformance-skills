@@ -6,6 +6,7 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ### Modifié
 
+- README : badge de la CI.
 - `install.sh`, `install.ps1` : proposent de lancer Claude Code dans le dossier de travail à la fin de la première installation (même terminal sous Linux et macOS, nouvelle fenêtre sous Windows).
 
 ## 0.2.0 - 2026-11-02

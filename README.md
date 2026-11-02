@@ -1,5 +1,7 @@
 # Skills Triple Performance pour Claude Code
 
+[![CI](https://github.com/neayi/tripleperformance-skills/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/neayi/tripleperformance-skills/actions/workflows/ci.yml)
+
 Un ensemble de [skills](https://docs.claude.com/en/docs/claude-code/skills) pour [Claude Code](https://claude.com/claude-code) qui aident les contributeurs de [Triple Performance](https://tripleperformance.fr), le wiki collaboratif de l'agroécologie, à rédiger, traduire et enrichir des articles.
 
 Les skills s'appuient sur des outils en ligne de commande : la CLI [`mediawiki`](https://github.com/neayi/Mediawiki-LLM-Cli) pour lire et modifier les pages, ImageMagick pour les images, Pandoc et Poppler pour les documents.
