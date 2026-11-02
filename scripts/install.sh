@@ -239,6 +239,19 @@ show_first_steps() {
   info "       Importe cette vidéo : https://www.youtube.com/watch?v=KZ5Tz3IGoSI"
 }
 
+# Le script a déjà le bon PATH : claude démarre ici, sans nouveau terminal
+offer_claude() {
+  local answer="" scope version dir
+  if [ "$ASSUME_YES" -eq 1 ] || [ ! -t 0 ] || [ ! -t 1 ]; then return 0; fi
+  IFS='|' read -r scope version dir <<<"${SKILL_ENTRIES[0]}"
+  info ""
+  printf 'Lancer Claude Code maintenant dans votre dossier de travail ? [O/n] '
+  read -r answer
+  case "$answer" in
+    ""|o|O|oui|y|Y|yes) cd "$dir"; exec claude ;;
+  esac
+}
+
 choose_workdir() {
   local answer=""
   if [ -z "$WORKDIR" ]; then
@@ -333,7 +346,12 @@ check_tools() {
     if [ "$SKILL_STATE" = "update" ]; then
       info "Mise à jour des skills disponible : relancez le script d'installation (sans --check)."
     fi
-    if [ "$SKILLS_INSTALLED" -eq 1 ]; then show_first_steps; else show_workdir_hint; fi
+    if [ "$SKILLS_INSTALLED" -eq 1 ]; then
+      show_first_steps
+      offer_claude
+    else
+      show_workdir_hint
+    fi
     exit 0
   fi
 
