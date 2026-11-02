@@ -34,6 +34,7 @@ claude --plugin-dir .                 # lance Claude Code avec le plugin de ce d
 - Toute skill qui écrit sur le wiki doit : écrire le wikitext dans un fichier local, montrer le résultat (ou un `diff -u` pour une page existante) et attendre l'accord explicite de l'utilisateur avant `mediawiki write` / `upload` / `rename` / `delete`.
 - Quand une convention du wiki est découverte (nom de modèle, champ obligatoire, catégorie), consignez-la dans la référence adéquate pour que la skill s'améliore.
 - Après une modification, relancez `python3 scripts/validate_skills.py`, et ajoutez une ligne dans `CHANGELOG.md` sous « Non publié ».
+- Toute fusion sur `main` qui modifie `skills/` change `version` dans `.claude-plugin/plugin.json` : sans cela, les utilisateurs déjà installés ne reçoivent rien (voir « Publier une version » dans `CONTRIBUTING.md`).
 
 ## Faits utiles sur le wiki
 

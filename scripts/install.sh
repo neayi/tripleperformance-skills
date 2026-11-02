@@ -2,24 +2,37 @@
 # Installe les outils utilisés par les skills Triple Performance.
 # Linux (apt, dnf, pacman, zypper), macOS (Homebrew) et WSL.
 #
-# Usage : ./scripts/install.sh [--check] [--yes]
-#   --check  vérifie seulement la présence des outils, n'installe rien
-#   --yes    ne demande pas de confirmation avant d'installer
+# Peut être lancé sans clone du dépôt : aucun autre fichier n'est nécessaire.
 
 set -euo pipefail
 
 CHECK_ONLY=0
 ASSUME_YES=0
-for arg in "$@"; do
-  case "$arg" in
+WORKDIR=""
+while [ "$#" -gt 0 ]; do
+  case "$1" in
     --check) CHECK_ONLY=1 ;;
     --yes|-y) ASSUME_YES=1 ;;
+    --dir)
+      [ "$#" -ge 2 ] || { echo "--dir attend un dossier" >&2; exit 2; }
+      WORKDIR="$2"
+      shift
+      ;;
     -h|--help)
-      sed -n '2,8p' "$0" | sed 's/^# \{0,1\}//'
+      cat <<'EOF'
+Installe les outils utilisés par les skills Triple Performance.
+
+Options :
+  --check      vérifie les outils, les skills et leur mise à jour, n'installe rien
+  --yes        ne demande pas de confirmation avant d'installer
+  --dir DIR    dossier de travail où installer les skills
+               (par défaut : ~/Triple Performance)
+EOF
       exit 0
       ;;
-    *) echo "Option inconnue : $arg" >&2; exit 2 ;;
+    *) echo "Option inconnue : $1" >&2; exit 2 ;;
   esac
+  shift
 done
 
 MEDIAWIKI_INSTALLER="https://raw.githubusercontent.com/neayi/Mediawiki-LLM-Cli/main/install.sh"
@@ -29,6 +42,11 @@ YTDLP_URL="https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp"
 DENO_INSTALLER="https://deno.land/install.sh"
 CLAUDE_INSTALLER="https://claude.ai/install.sh"
 WIKI_URL="https://wiki.tripleperformance.fr"
+PLUGIN_ID="triple-performance@triple-performance"
+MARKETPLACE_NAME="triple-performance"
+MARKETPLACE_REPO="neayi/tripleperformance-skills"
+PLUGIN_MANIFEST_URL="https://raw.githubusercontent.com/$MARKETPLACE_REPO/main/.claude-plugin/plugin.json"
+DEFAULT_WORKDIR="$HOME/Triple Performance"
 
 if [ -t 1 ]; then
   GREEN=$'\033[32m'; RED=$'\033[31m'; YELLOW=$'\033[33m'; RESET=$'\033[0m'
@@ -62,7 +80,7 @@ case "$OS" in
     fi
     ;;
   MINGW*|MSYS*|CYGWIN*)
-    warn "Windows détecté : utilisez plutôt scripts\\install.ps1 dans PowerShell."
+    warn "Windows détecté : utilisez plutôt install.ps1 dans PowerShell (voir le README)."
     exit 1
     ;;
 esac
@@ -141,37 +159,194 @@ show_wiki_login() {
   fi
 }
 
+# --- Skills ----------------------------------------------------------------
+
+SKILL_STATE=""     # ok, update, missing ou unknown
+SKILL_ENTRIES=()   # "portée|version|dossier", dossier vide pour la portée user
+LATEST_VERSION=""
+SKILLS_INSTALLED=0
+
+# Un dossier supprimé depuis l'installation ne compte plus
+SKILL_PARSER='
+import json, os, sys
+for e in json.load(sys.stdin):
+    path = e.get("projectPath", "")
+    if e.get("id") == sys.argv[1] and (e.get("scope") == "user" or os.path.isdir(path)):
+        print("|".join((e.get("scope", ""), e.get("version", ""), path)))
+'
+
+read_skills() {
+  local list parsed line scope version dir
+  SKILL_ENTRIES=()
+  LATEST_VERSION=""
+  SKILL_STATE=missing
+  has_any claude || return 0
+  if ! has_any python3; then SKILL_STATE=unknown; return 0; fi
+  list="$(claude plugin list --json 2>/dev/null)" || { SKILL_STATE=unknown; return 0; }
+  parsed="$(printf '%s' "$list" | python3 -c "$SKILL_PARSER" "$PLUGIN_ID" 2>/dev/null)" \
+    || { SKILL_STATE=unknown; return 0; }
+  while IFS= read -r line; do
+    if [ -n "$line" ]; then SKILL_ENTRIES+=("$line"); fi
+  done <<<"$parsed"
+  [ "${#SKILL_ENTRIES[@]}" -gt 0 ] || return 0
+
+  SKILL_STATE=ok
+  # Lecture seule : comparer à GitHub évite de modifier la marketplace pendant --check
+  LATEST_VERSION="$(curl -fsSL --max-time 10 "$PLUGIN_MANIFEST_URL" 2>/dev/null \
+    | sed -n 's/^ *"version": "\(.*\)",\{0,1\}$/\1/p' | head -n 1)" || LATEST_VERSION=""
+  for line in "${SKILL_ENTRIES[@]}"; do
+    IFS='|' read -r scope version dir <<<"$line"
+    if [ -n "$LATEST_VERSION" ] && [ "$version" != "$LATEST_VERSION" ]; then SKILL_STATE=update; fi
+  done
+}
+
+show_skills() {
+  local line scope version dir
+  read_skills
+  case "$SKILL_STATE" in
+    missing) ko "Skills Triple Performance — non installées" ;;
+    unknown) warn "  ? Skills Triple Performance non vérifiées" ;;
+    *)
+      for line in "${SKILL_ENTRIES[@]}"; do
+        IFS='|' read -r scope version dir <<<"$line"
+        if [ -n "$LATEST_VERSION" ] && [ "$version" != "$LATEST_VERSION" ]; then
+          warn "  ! Skills Triple Performance $version (${dir:-tous les dossiers}) : version $LATEST_VERSION disponible"
+        else
+          ok "Skills Triple Performance $version (${dir:-tous les dossiers})"
+        fi
+      done
+      ;;
+  esac
+}
+
+show_workdir_hint() {
+  local line scope version dir
+  [ "${#SKILL_ENTRIES[@]}" -gt 0 ] || return 0
+  IFS='|' read -r scope version dir <<<"${SKILL_ENTRIES[0]}"
+  if [ -n "$dir" ]; then info "Pour travailler, lancez claude dans ce dossier : cd \"$dir\""; fi
+}
+
+show_first_steps() {
+  local scope version dir
+  IFS='|' read -r scope version dir <<<"${SKILL_ENTRIES[0]}"
+  info ""
+  info "Pour commencer :"
+  info "  1. Ouvrez un nouveau terminal et placez-vous dans votre dossier de travail :"
+  info "       cd \"$dir\""
+  info "  2. Lancez Claude Code (au premier lancement, connectez-vous à votre compte Claude) :"
+  info "       claude"
+  info "  3. Demandez-lui par exemple d'importer une vidéo YouTube :"
+  info "       Importe cette vidéo : https://www.youtube.com/watch?v=KZ5Tz3IGoSI"
+}
+
+choose_workdir() {
+  local answer=""
+  if [ -z "$WORKDIR" ]; then
+    WORKDIR="$DEFAULT_WORKDIR"
+    if [ "$ASSUME_YES" -eq 0 ]; then
+      printf 'Dossier de travail Triple Performance [%s] : ' "$DEFAULT_WORKDIR"
+      read -r answer
+      if [ -n "$answer" ]; then WORKDIR="$answer"; fi
+    fi
+  fi
+  case "$WORKDIR" in
+    \~|\~/*) WORKDIR="$HOME${WORKDIR#\~}" ;;
+    /*) ;;
+    *) WORKDIR="$PWD/$WORKDIR" ;;
+  esac
+}
+
+# Contexte pour les demandes ambiguës ; jamais écrasé, l'utilisateur peut l'avoir complété
+write_workspace_guide() {
+  local file="$WORKDIR/CLAUDE.md"
+  if [ -e "$file" ]; then return 0; fi
+  cat >"$file" <<'EOF'
+# Espace de travail Triple Performance
+
+Ce dossier sert à contribuer à Triple Performance (https://wiki.tripleperformance.fr/), le wiki collaboratif de l'agroécologie.
+
+- Sauf indication contraire, mes demandes concernent ce wiki : utilise les skills Triple Performance.
+- Réponds en français, sans jargon technique.
+- Je dépose ici mes PDF, images et fichiers Excel.
+EOF
+}
+
+install_skills() {
+  info "Installation des skills dans $WORKDIR..."
+  mkdir -p "$WORKDIR"
+  if (
+    cd "$WORKDIR"
+    claude plugin marketplace add "$MARKETPLACE_REPO" --scope local
+    claude plugin install "$PLUGIN_ID" --scope local
+  ); then
+    SKILLS_INSTALLED=1
+    write_workspace_guide
+  else
+    warn "Échec de l'installation des skills."
+  fi
+}
+
+update_skills() {
+  local line scope version dir
+  for line in "${SKILL_ENTRIES[@]}"; do
+    IFS='|' read -r scope version dir <<<"$line"
+    [ "$version" != "$LATEST_VERSION" ] || continue
+    info "Mise à jour des skills (${dir:-tous les dossiers})..."
+    # Depuis le dossier concerné : ailleurs, la CLI répond que tout est à jour
+    (
+      cd "${dir:-.}"
+      claude plugin marketplace update "$MARKETPLACE_NAME"
+      claude plugin update "$PLUGIN_ID" --scope "$scope"
+    ) || warn "Échec de la mise à jour des skills."
+  done
+}
+
 # --- Vérification ----------------------------------------------------------
 
 MISSING=()
-info ""
-info "Vérification des outils :"
-for entry in "${TOOLS[@]}"; do
-  IFS='|' read -r key cmds label <<<"$entry"
-  if has_any "$cmds"; then
-    ok "$label"
-  else
-    ko "$label — manquant"
-    MISSING+=("$key")
-  fi
-done
-show_wiki_login
 
-if [ "${#MISSING[@]}" -eq 0 ]; then
+check_tools() {
+  local entry key cmds label
+  MISSING=()
   info ""
-  info "Tout est installé."
-  if ! mediawiki version >/dev/null 2>&1; then
-    warn "La commande mediawiki est présente mais ne répond pas correctement."
-  fi
-  exit 0
-fi
+  info "Vérification des outils :"
+  for entry in "${TOOLS[@]}"; do
+    IFS='|' read -r key cmds label <<<"$entry"
+    if has_any "$cmds"; then
+      ok "$label"
+    else
+      ko "$label — manquant"
+      MISSING+=("$key")
+    fi
+  done
+  show_skills
+  show_wiki_login
 
-if [ "$CHECK_ONLY" -eq 1 ]; then
-  info ""
-  info "Outils manquants : ${MISSING[*]}"
-  info "Lancez ./scripts/install.sh pour les installer."
-  exit 1
-fi
+  if [ "${#MISSING[@]}" -eq 0 ] && [ "$SKILL_STATE" != "missing" ]; then
+    # Une mise à jour disponible n'empêche pas de travailler : pas d'échec avec --check
+    if [ "$SKILL_STATE" = "update" ] && [ "$CHECK_ONLY" -eq 0 ]; then return 0; fi
+    info ""
+    info "Tout est installé."
+    if ! mediawiki version >/dev/null 2>&1; then
+      warn "La commande mediawiki est présente mais ne répond pas correctement."
+    fi
+    if [ "$SKILL_STATE" = "update" ]; then
+      info "Mise à jour des skills disponible : relancez le script d'installation (sans --check)."
+    fi
+    if [ "$SKILLS_INSTALLED" -eq 1 ]; then show_first_steps; else show_workdir_hint; fi
+    exit 0
+  fi
+
+  if [ "$CHECK_ONLY" -eq 1 ]; then
+    info ""
+    if [ "${#MISSING[@]}" -gt 0 ]; then info "Outils manquants : ${MISSING[*]}"; fi
+    if [ "$SKILL_STATE" = "missing" ]; then info "Skills Triple Performance non installées."; fi
+    info "Lancez le script d'installation (sans --check) pour les installer."
+    exit 1
+  fi
+}
+
+check_tools
 
 # --- Installation ----------------------------------------------------------
 
@@ -218,7 +393,7 @@ NEED_MEDIAWIKI=0
 NEED_YTDLP=0
 NEED_DENO=0
 NEED_CLAUDE=0
-for key in "${MISSING[@]}"; do
+for key in ${MISSING[@]+"${MISSING[@]}"}; do
   if [ "$key" = "mediawiki" ]; then
     NEED_MEDIAWIKI=1
   elif [ "$key" = "claude" ]; then
@@ -242,7 +417,13 @@ info ""
 [ "$NEED_YTDLP" -eq 1 ] && info "yt-dlp à installer dans ~/.local/bin depuis $YTDLP_URL"
 [ "$NEED_DENO" -eq 1 ] && info "Deno à installer dans ~/.deno depuis $DENO_INSTALLER"
 [ "$NEED_CLAUDE" -eq 1 ] && info "Claude Code à installer dans ~/.local/bin depuis $CLAUDE_INSTALLER"
-confirm "Continuer ?" || { info "Abandon."; exit 1; }
+if [ "$SKILL_STATE" = "missing" ] || [ "$SKILL_STATE" = "unknown" ]; then
+  choose_workdir
+  info "Skills à installer dans : $WORKDIR"
+fi
+if [ "${#MISSING[@]}" -gt 0 ] || [ "$SKILL_STATE" != "update" ]; then
+  confirm "Continuer ?" || { info "Abandon."; exit 1; }
+fi
 
 if [ "${#PACKAGES[@]}" -gt 0 ]; then
   [ "$PM" = "brew" ] && ensure_brew
@@ -286,6 +467,16 @@ if [ "$NEED_CLAUDE" -eq 1 ]; then
   esac
 fi
 
+# Les installeurs modifient le fichier de démarrage du shell, pas cette session
+export PATH="$HOME/.local/bin:$HOME/.deno/bin:$PATH"
+
+read_skills
+case "$SKILL_STATE" in
+  missing) install_skills ;;
+  update)  update_skills ;;
+esac
+
 info ""
 info "Installation terminée. Vérification finale :"
-exec "$0" --check
+CHECK_ONLY=1
+check_tools

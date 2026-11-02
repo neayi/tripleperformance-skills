@@ -4,8 +4,17 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ## Non publié
 
+## 0.2.0 - 2026-11-02
+
 ### Modifié
 
+- `install.sh`, `install.ps1` : créent un `CLAUDE.md` dans le dossier de travail, sans jamais l'écraser.
+- `install.sh`, `install.ps1` : affichent les premiers pas après l'installation des skills.
+- `CLAUDE.md`, `CONTRIBUTING.md` : toute fusion sur `main` qui modifie `skills/` change la version du plugin.
+- `install.sh`, `install.ps1` : créent un dossier de travail, y installent les skills (portée locale), signalent une mise à jour avec la vérification et l'appliquent quand on relance l'installation.
+- `install.sh` : fonctionne sans clone du dépôt ; README et skills renvoient à la commande directe.
+- README : installation Windows par lancement direct du script, sans clone du dépôt.
+- `install.ps1` et CI : passage de Python 3.12 à 3.14.
 - `install.sh`, `install.ps1` : indiquent si l'utilisateur est connecté au wiki français, sans influencer le code de sortie.
 - `install.sh`, `install.ps1` : vérifient et installent Claude Code (installeur officiel ou `winget`) ; README mis à jour.
 - `install.ps1` : recharge le PATH depuis le registre pendant l'installation (`openpyxl` s'installe dès le premier passage, `-Check` fonctionne dans un terminal déjà ouvert), ne réinstalle pas une dépendance déjà présente (Deno) et vérifie les outils à la fin.

@@ -31,7 +31,7 @@ Sinon, il appelle `yt-dlp` et écrit dans `tp-travail/youtube-<id>/` :
 | `transcription-chapitres.txt` | la même découpée selon les chapitres de la vidéo, quand il y en a |
 | `thumbnail_youtube_<id>.jpg` | vignette convertie en JPEG, métadonnées retirées |
 
-- Si `yt-dlp` manque, propose de relancer `./scripts/install.sh` (ou `install.ps1`) du dépôt des skills. S'il échoue sur une vidéo pourtant publique, il est probablement trop ancien : `yt-dlp -U` (ou réinstallation via le gestionnaire de paquets).
+- Si `yt-dlp` manque, propose de relancer la commande d'installation du README du dépôt des skills. S'il échoue sur une vidéo pourtant publique, il est probablement trop ancien : `yt-dlp -U` (ou réinstallation via le gestionnaire de paquets).
 - `--lang en` force la langue de la transcription (par défaut : langue de la vidéo).
 - Sans transcription disponible, préviens l'utilisateur : la page peut être créée avec le modèle seul, sans corps d'article.
 

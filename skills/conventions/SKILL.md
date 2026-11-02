@@ -50,7 +50,7 @@ pandoc document.docx -t mediawiki -o tp-travail/doc.wiki  # docx/html/md → wik
 
 Les scripts des skills utilisent Python 3 sans dépendance. Sous Windows, si `python3` est introuvable, utilise `python` ou `py`.
 
-Pour lire ou produire un fichier Excel (`.xlsx`), utilise le module `openpyxl`, installé par les scripts d'installation. Charge le classeur avec `openpyxl.load_workbook(chemin, data_only=True)` pour obtenir les valeurs calculées des formules plutôt que les formules elles-mêmes. S'il manque, propose à l'utilisateur de relancer `./scripts/install.sh` (ou `install.ps1`) du dépôt des skills.
+Pour lire ou produire un fichier Excel (`.xlsx`), utilise le module `openpyxl`, installé par les scripts d'installation. Charge le classeur avec `openpyxl.load_workbook(chemin, data_only=True)` pour obtenir les valeurs calculées des formules plutôt que les formules elles-mêmes. S'il manque, propose à l'utilisateur de relancer la commande d'installation du README du dépôt des skills.
 
 ## Dossier de travail
 

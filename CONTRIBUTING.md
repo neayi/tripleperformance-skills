@@ -57,6 +57,8 @@ La skill `skill-creator` de Claude Code peut vous aider à rédiger la descripti
 
 ## Publier une version
 
+Chaque fusion sur `main` qui modifie `skills/` publie une nouvelle version. La version de la marketplace est celle de `plugin.json` sur `main` : sans changement de `version`, les utilisateurs déjà installés ne reçoivent rien, et une nouvelle installation aurait un contenu différent sous le même numéro. Les changements qui ne touchent que `scripts/` n'en ont pas besoin : la commande d'installation lit directement `main`.
+
 1. Mettez à jour `version` dans `.claude-plugin/plugin.json` (versionnage sémantique).
 2. Transformez la section « Non publié » du `CHANGELOG.md` en numéro de version daté.
-3. Committez, taguez (`git tag v0.2.0`) et poussez. Les utilisateurs récupèrent la mise à jour avec `/plugin marketplace update triple-performance`.
+3. Committez, taguez (`git tag v0.2.0`) et poussez. Les utilisateurs récupèrent la mise à jour en relançant le script d'installation.

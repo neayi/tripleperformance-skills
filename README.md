@@ -25,29 +25,39 @@ Les skills se déclenchent automatiquement quand votre demande correspond à leu
 
 ### 1. Installer les outils
 
-Clonez ce dépôt, puis lancez le script correspondant à votre système. Il détecte ce qui est déjà installé et n'installe que ce qui manque.
+Lancez le script correspondant à votre système. Il détecte ce qui est déjà installé et n'installe que ce qui manque.
 
 **Linux, macOS, WSL**
 
+Exécutez la commande ci-dessous dans un terminal (`curl` est nécessaire). Inutile de cloner le dépôt.
+
 ```bash
-git clone https://github.com/neayi/tripleperformance-skills.git
-cd tripleperformance-skills
-./scripts/install.sh            # installe ce qui manque
-./scripts/install.sh --check    # vérifie seulement, n'installe rien
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/neayi/tripleperformance-skills/main/scripts/install.sh)"
 ```
 
-Gestionnaires de paquets pris en charge : `apt` (Debian, Ubuntu, WSL), `dnf` (Fedora), `pacman` (Arch), `zypper` (openSUSE) et Homebrew (macOS, installé au besoin après confirmation).
+Pour vérifier seulement, sans rien installer, ajoutez `--check` :
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/neayi/tripleperformance-skills/main/scripts/install.sh)" install.sh --check
+```
+
+Gestionnaires de paquets pris en charge : `apt` (Debian, Ubuntu, WSL), `dnf` (Fedora), `pacman` (Arch), `zypper` (openSUSE) et Homebrew (macOS, installé au besoin après confirmation). Une fois l'installation terminée, ouvrez un nouveau terminal pour que les outils soient disponibles.
 
 **Windows (PowerShell)**
 
+Exécutez la commande ci-dessous dans un terminal powershell (copier la commande avec le bouton à droite au survol).
+
 ```powershell
-git clone https://github.com/neayi/tripleperformance-skills.git
-cd tripleperformance-skills
-powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1           # installe
-powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1 -Check    # vérifie seulement
+powershell -ExecutionPolicy Bypass -c "irm https://raw.githubusercontent.com/neayi/tripleperformance-skills/main/scripts/install.ps1 -OutFile $env:TEMP\tp-install.ps1; & $env:TEMP\tp-install.ps1"
 ```
 
-Le script utilise `winget`, présent par défaut sur Windows 10 et 11.
+Pour vérifier seulement, sans rien installer, ajoutez `-Check` :
+
+```powershell
+powershell -ExecutionPolicy Bypass -c "irm https://raw.githubusercontent.com/neayi/tripleperformance-skills/main/scripts/install.ps1 -OutFile $env:TEMP\tp-install.ps1; & $env:TEMP\tp-install.ps1 -Check"
+```
+
+Le script utilise `winget`, présent par défaut sur Windows 10 et 11. Une fois l'installation terminée, ouvrez un nouveau terminal pour que les outils soient disponibles.
 
 Outils installés :
 
@@ -67,7 +77,7 @@ Outils installés :
 
 ### 2. Se connecter au wiki
 
-La lecture ne demande pas de compte. Pour écrire, connectez-vous une fois par wiki (le mode de vérification des scripts d'installation indique si vous êtes connecté au wiki français) :
+La lecture ne demande pas de compte. Pour écrire, connectez-vous une fois par wiki :
 
 ```bash
 mediawiki login https://wiki.tripleperformance.fr
@@ -76,22 +86,17 @@ mediawiki login https://en.tripleperformance.ag    # si vous traduisez vers l'an
 
 La commande ouvre la page `Spécial:BotPasswords` et vous guide pour créer un mot de passe de robot. Accordez au moins les droits d'édition, de création de pages et de téléversement de fichiers.
 
-### 3. Installer les skills dans Claude Code
+### 3. Lancer Claude Code dans votre dossier de travail
 
-Ouvrez un nouveau terminal, puis lancez `claude`. Au premier lancement, connectez-vous à votre compte Claude.
+Le script d'installation vous demande où créer votre dossier de travail (par défaut `Documents\Triple Performance` sous Windows, `~/Triple Performance` sous Linux et macOS) et y installe les skills. Elles ne sont actives que dans ce dossier. Il y ajoute aussi un fichier `CLAUDE.md`, qui indique à Claude que vos demandes concernent le wiki ; vous pouvez le compléter, il n'est jamais écrasé.
 
-Dans Claude Code :
+Ouvrez un nouveau terminal, placez-vous dans ce dossier et lancez `claude`. Au premier lancement, connectez-vous à votre compte Claude.
 
-```
-/plugin marketplace add neayi/tripleperformance-skills
-/plugin install triple-performance@triple-performance
-```
-
-Pour récupérer les nouvelles versions : `/plugin marketplace update triple-performance`.
+Pour savoir si une nouvelle version des skills existe, relancez la commande de vérification ; pour l'installer, relancez la commande d'installation. Redémarrez ensuite Claude Code.
 
 ## Utilisation
 
-Ouvrez Claude Code dans un dossier de travail (celui où se trouvent vos PDF ou images, par exemple) et décrivez ce que vous voulez faire. Les fichiers intermédiaires sont écrits dans un sous-dossier `tp-travail/` de ce dossier.
+Ouvrez Claude Code dans votre dossier de travail, placez-y vos PDF ou images, et décrivez ce que vous voulez faire. Les fichiers intermédiaires sont écrits dans un sous-dossier `tp-travail/` de ce dossier.
 
 Les skills ne publient **jamais** sur le wiki sans vous avoir montré le texte final (ou le diff, pour une page existante) et obtenu votre accord explicite.
 
