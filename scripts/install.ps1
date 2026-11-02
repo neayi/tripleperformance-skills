@@ -1,9 +1,9 @@
-<#
+﻿<#
 .SYNOPSIS
     Installe les outils utilisés par les skills Triple Performance sous Windows.
 
 .DESCRIPTION
-    Utilise winget pour ImageMagick, Pandoc, Poppler, jq, Python, yt-dlp, Deno et Git,
+    Utilise winget pour ImageMagick, Pandoc, Poppler, jq, Python, yt-dlp, Deno, Git et Claude Code,
     et l'installeur officiel pour la CLI mediawiki.
 
 .PARAMETER Check
@@ -24,6 +24,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $MediawikiInstaller = 'https://raw.githubusercontent.com/neayi/Mediawiki-LLM-Cli/main/install.ps1'
+$WikiUrl = 'https://wiki.tripleperformance.fr'
 
 # Commandes acceptées (la première trouvée suffit) et identifiant winget
 $Tools = @(
@@ -37,7 +38,17 @@ $Tools = @(
     @{ Key = 'ytdlp';       Commands = @('yt-dlp');             WingetId = 'yt-dlp.yt-dlp';            Label = 'yt-dlp (vidéos YouTube : métadonnées, vignette, transcription)' }
     @{ Key = 'deno';        Commands = @('deno');               WingetId = 'DenoLand.Deno';            Label = 'Deno (moteur JavaScript requis par yt-dlp pour YouTube)' }
     @{ Key = 'git';         Commands = @('git');                WingetId = 'Git.Git';                  Label = 'git (et Git Bash, utilisé par Claude Code)' }
+    @{ Key = 'claude';      Commands = @('claude');             WingetId = 'Anthropic.ClaudeCode';     Label = 'Claude Code (exécute les skills)' }
 )
+
+function Update-SessionPath {
+    # Un terminal ouvert avant l'installation transmet un PATH périmé : on complète avec celui du registre
+    $known = $env:Path -split ';'
+    $added = foreach ($scope in 'Machine', 'User') {
+        [Environment]::GetEnvironmentVariable('Path', $scope) -split ';' | Where-Object { $_ -and $known -notcontains $_ }
+    }
+    if ($added) { $env:Path = (@($env:Path.TrimEnd(';')) + $added) -join ';' }
+}
 
 function Find-Command([string[]]$Commands) {
     foreach ($cmd in $Commands) {
@@ -54,6 +65,9 @@ function Test-Tool($Tool) {
     if ($Tool.Module) {
         $python = Find-Python
         if (-not $python) { return $false }
+        # Windows PowerShell transforme la sortie d'erreur d'un programme en erreur bloquante si 'Stop'
+        # (l'affectation reste locale à cette fonction)
+        $ErrorActionPreference = 'Continue'
         & $python -c "import $($Tool.Module)" 2>$null
         return $LASTEXITCODE -eq 0
     }
@@ -65,6 +79,27 @@ function Confirm-Step([string]$Message) {
     $answer = Read-Host "$Message [o/N]"
     return $answer -match '^(o|oui|y|yes)$'
 }
+
+# Information seulement : la lecture ne demande pas de compte, le code de sortie n'en dépend pas
+function Show-WikiLogin {
+    if (-not (Find-Command @('mediawiki'))) { return }
+    $ErrorActionPreference = 'Continue'
+    try {
+        $output = & mediawiki api "$WikiUrl/api.php?action=query&meta=userinfo&format=json" 2>$null
+        $user = (($output -join "`n") | ConvertFrom-Json).query.userinfo
+    } catch {
+        $user = $null
+    }
+    if (-not $user) {
+        Write-Host '  [??] Connexion au wiki non vérifiée (wiki injoignable ?)' -ForegroundColor Yellow
+    } elseif ($user.id -gt 0) {
+        Write-Host "  [OK] Connecté au wiki : $($user.name)" -ForegroundColor Green
+    } else {
+        Write-Host "  [--] Non connecté au wiki (nécessaire pour écrire) : mediawiki login $WikiUrl" -ForegroundColor Red
+    }
+}
+
+Update-SessionPath
 
 Write-Host "Système : Windows $([Environment]::OSVersion.Version)"
 Write-Host ''
@@ -79,11 +114,11 @@ foreach ($tool in $Tools) {
         $Missing += $tool
     }
 }
+Show-WikiLogin
 
 if ($Missing.Count -eq 0) {
     Write-Host ''
     Write-Host 'Tout est installé.'
-    Write-Host 'Pensez à vous connecter au wiki : mediawiki login https://wiki.tripleperformance.fr'
     exit 0
 }
 
@@ -105,12 +140,17 @@ foreach ($tool in $Missing) { Write-Host "  À installer : $($tool.Label)" }
 if (-not (Confirm-Step 'Continuer ?')) { Write-Host 'Abandon.'; exit 1 }
 
 foreach ($tool in $WingetTools) {
+    Update-SessionPath
+    # Un paquet précédent a pu l'installer comme dépendance (Deno avec yt-dlp)
+    if (Test-Tool $tool) { continue }
     Write-Host "Installation de $($tool.WingetId)..."
     winget install --id $tool.WingetId --exact --silent --accept-package-agreements --accept-source-agreements
     if ($LASTEXITCODE -ne 0) {
         Write-Host "  Échec de l'installation de $($tool.WingetId) (code $LASTEXITCODE)." -ForegroundColor Yellow
     }
 }
+
+Update-SessionPath
 
 $PipModules = @($Missing | Where-Object { $_.Module } | ForEach-Object { $_.Module })
 if ($PipModules.Count -gt 0) {
@@ -119,8 +159,7 @@ if ($PipModules.Count -gt 0) {
         Write-Host "Installation des modules Python : $($PipModules -join ', ')..."
         & $python -m pip install --user @PipModules
     } else {
-        # Python vient d'être installé : il n'est pas encore dans le PATH de cette session
-        Write-Host "Python n'est pas encore accessible : relancez ce script dans un nouveau terminal pour installer $($PipModules -join ', ')." -ForegroundColor Yellow
+        Write-Host "Python est introuvable : impossible d'installer $($PipModules -join ', ')." -ForegroundColor Yellow
     }
 }
 
@@ -129,8 +168,16 @@ if ($Missing | Where-Object { $_.Key -eq 'mediawiki' }) {
     Invoke-RestMethod $MediawikiInstaller | Invoke-Expression
 }
 
+Update-SessionPath
+
 Write-Host ''
+$StillMissing = @($Tools | Where-Object { -not (Test-Tool $_) })
+if ($StillMissing.Count -gt 0) {
+    Write-Host "Outils toujours manquants : $(($StillMissing | ForEach-Object { $_.Key }) -join ', ')" -ForegroundColor Yellow
+    Write-Host 'Relancez ce script dans un nouveau terminal pour les installer.'
+    exit 1
+}
+
 Write-Host 'Installation terminée.' -ForegroundColor Green
-Write-Host 'Ouvrez un NOUVEAU terminal pour que le PATH soit à jour, puis vérifiez avec :'
-Write-Host '  powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1 -Check'
-Write-Host 'Connectez-vous ensuite au wiki : mediawiki login https://wiki.tripleperformance.fr'
+Write-Host 'Ouvrez un NOUVEAU terminal pour utiliser ces outils : celui-ci garde son ancien PATH.'
+Show-WikiLogin

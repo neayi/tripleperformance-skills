@@ -63,10 +63,11 @@ Outils installés :
 | yt-dlp | `yt-dlp` | Récupérer titre, description, vignette et transcription des vidéos YouTube |
 | Deno | `deno` | Moteur JavaScript dont yt-dlp a besoin pour YouTube |
 | curl, git | `curl`, `git` | Appels API, mise à jour du dépôt |
+| Claude Code | `claude` | Assistant qui exécute les skills |
 
 ### 2. Se connecter au wiki
 
-La lecture ne demande pas de compte. Pour écrire, connectez-vous une fois par wiki :
+La lecture ne demande pas de compte. Pour écrire, connectez-vous une fois par wiki (le mode de vérification des scripts d'installation indique si vous êtes connecté au wiki français) :
 
 ```bash
 mediawiki login https://wiki.tripleperformance.fr
@@ -76,6 +77,8 @@ mediawiki login https://en.tripleperformance.ag    # si vous traduisez vers l'an
 La commande ouvre la page `Spécial:BotPasswords` et vous guide pour créer un mot de passe de robot. Accordez au moins les droits d'édition, de création de pages et de téléversement de fichiers.
 
 ### 3. Installer les skills dans Claude Code
+
+Ouvrez un nouveau terminal, puis lancez `claude`. Au premier lancement, connectez-vous à votre compte Claude.
 
 Dans Claude Code :
 

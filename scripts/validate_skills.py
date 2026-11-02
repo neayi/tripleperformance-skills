@@ -90,9 +90,19 @@ def validate_manifests():
     return errors
 
 
+def validate_powershell_encoding():
+    """Sans BOM, Windows PowerShell 5.1 lit le fichier en ANSI : le « — » devient un guillemet."""
+    errors = []
+    for path in sorted(ROOT.rglob("*.ps1")):
+        if not path.read_bytes().startswith(b"\xef\xbb\xbf"):
+            errors.append(f"{path.relative_to(ROOT)}: encodage UTF-8 avec BOM obligatoire")
+    return errors
+
+
 def main():
     skill_dirs = sorted(p for p in SKILLS_DIR.iterdir() if p.is_dir())
     errors = validate_manifests()
+    errors.extend(validate_powershell_encoding())
     for skill_dir in skill_dirs:
         errors.extend(validate_skill(skill_dir))
 

@@ -27,6 +27,8 @@ MEDIAWIKI_INSTALLER="https://raw.githubusercontent.com/neayi/Mediawiki-LLM-Cli/m
 # on installe l'exécutable officiel, qui se met à jour avec `yt-dlp -U`.
 YTDLP_URL="https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp"
 DENO_INSTALLER="https://deno.land/install.sh"
+CLAUDE_INSTALLER="https://claude.ai/install.sh"
+WIKI_URL="https://wiki.tripleperformance.fr"
 
 if [ -t 1 ]; then
   GREEN=$'\033[32m'; RED=$'\033[31m'; YELLOW=$'\033[33m'; RESET=$'\033[0m'
@@ -87,6 +89,7 @@ TOOLS=(
   "deno|deno|Deno (moteur JavaScript requis par yt-dlp pour YouTube)"
   "curl|curl|curl (appels API)"
   "git|git|git"
+  "claude|claude|Claude Code (exécute les skills)"
 )
 
 # Nom du paquet pour chaque outil, selon le gestionnaire
@@ -123,6 +126,21 @@ has_any() {
   return 1
 }
 
+# Information seulement : la lecture ne demande pas de compte, le code de sortie n'en dépend pas
+show_wiki_login() {
+  local output name
+  has_any mediawiki || return 0
+  output="$(mediawiki api "$WIKI_URL/api.php?action=query&meta=userinfo&format=json" 2>/dev/null)" || output=""
+  name="$(printf '%s\n' "$output" | sed -n 's/^ *"name": "\(.*\)",\{0,1\}$/\1/p')"
+  if [ -z "$name" ]; then
+    warn "  ? Connexion au wiki non vérifiée (wiki injoignable ?)"
+  elif printf '%s\n' "$output" | grep -q '"anon": true'; then
+    ko "Non connecté au wiki (nécessaire pour écrire) : mediawiki login $WIKI_URL"
+  else
+    ok "Connecté au wiki : $name"
+  fi
+}
+
 # --- Vérification ----------------------------------------------------------
 
 MISSING=()
@@ -137,6 +155,7 @@ for entry in "${TOOLS[@]}"; do
     MISSING+=("$key")
   fi
 done
+show_wiki_login
 
 if [ "${#MISSING[@]}" -eq 0 ]; then
   info ""
@@ -144,7 +163,6 @@ if [ "${#MISSING[@]}" -eq 0 ]; then
   if ! mediawiki version >/dev/null 2>&1; then
     warn "La commande mediawiki est présente mais ne répond pas correctement."
   fi
-  info "Pensez à vous connecter au wiki : mediawiki login https://wiki.tripleperformance.fr"
   exit 0
 fi
 
@@ -199,9 +217,12 @@ PIP_MODULES=()
 NEED_MEDIAWIKI=0
 NEED_YTDLP=0
 NEED_DENO=0
+NEED_CLAUDE=0
 for key in "${MISSING[@]}"; do
   if [ "$key" = "mediawiki" ]; then
     NEED_MEDIAWIKI=1
+  elif [ "$key" = "claude" ]; then
+    NEED_CLAUDE=1
   elif [ "$key" = "ytdlp" ] && [ "$PM" != "brew" ]; then
     NEED_YTDLP=1
   elif [ "$key" = "deno" ] && [ "$PM" != "brew" ]; then
@@ -220,6 +241,7 @@ info ""
 [ "$NEED_MEDIAWIKI" -eq 1 ] && info "CLI mediawiki à installer depuis $MEDIAWIKI_INSTALLER"
 [ "$NEED_YTDLP" -eq 1 ] && info "yt-dlp à installer dans ~/.local/bin depuis $YTDLP_URL"
 [ "$NEED_DENO" -eq 1 ] && info "Deno à installer dans ~/.deno depuis $DENO_INSTALLER"
+[ "$NEED_CLAUDE" -eq 1 ] && info "Claude Code à installer dans ~/.local/bin depuis $CLAUDE_INSTALLER"
 confirm "Continuer ?" || { info "Abandon."; exit 1; }
 
 if [ "${#PACKAGES[@]}" -gt 0 ]; then
@@ -253,6 +275,15 @@ if [ "$NEED_DENO" -eq 1 ]; then
   # -y : ajoute aussi ~/.deno/bin au PATH dans le fichier de démarrage du shell
   curl -fsSL "$DENO_INSTALLER" | sh -s -- -y
   warn "Ouvrez un nouveau terminal pour que la commande deno soit disponible."
+fi
+
+if [ "$NEED_CLAUDE" -eq 1 ]; then
+  # Sans sudo : l'installeur officiel écrit dans le dossier de l'utilisateur
+  curl -fsSL "$CLAUDE_INSTALLER" | bash
+  case ":$PATH:" in
+    *":$HOME/.local/bin:"*) ;;
+    *) warn "Ajoutez ~/.local/bin à votre PATH puis ouvrez un nouveau terminal." ;;
+  esac
 fi
 
 info ""

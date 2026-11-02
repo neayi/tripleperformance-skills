@@ -6,6 +6,10 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ### Modifié
 
+- `install.sh`, `install.ps1` : indiquent si l'utilisateur est connecté au wiki français, sans influencer le code de sortie.
+- `install.sh`, `install.ps1` : vérifient et installent Claude Code (installeur officiel ou `winget`) ; README mis à jour.
+- `install.ps1` : recharge le PATH depuis le registre pendant l'installation (`openpyxl` s'installe dès le premier passage, `-Check` fonctionne dans un terminal déjà ouvert), ne réinstalle pas une dépendance déjà présente (Deno) et vérifie les outils à la fin.
+- `install.ps1` : encodé en UTF-8 avec BOM pour Windows PowerShell 5.1 (erreur de syntaxe au lancement), et plus d'arrêt du script quand `openpyxl` est absent. `validate_skills.py` vérifie ce BOM.
 - `nouvel-article` : modèle Portrait de ferme — `Organisme` renvoie à une page `Structure:`, valeurs attendues de `pH`, lien `Utilisateur:` créé par `Nom de l'agriculteur`.
 - `conventions` : LinkTitles n'est relancé qu'après une création ou une modification qui ajoute ou réécrit du texte, pas après l'ajout d'une image ou d'un graphique, une correction de paramètre ou de lien, ni un renommage.
 - `conventions` : LinkTitles n'est relancé qu'après un ajout ou une réécriture de texte, pas pour une image, un graphique ou une correction.

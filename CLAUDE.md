@@ -30,6 +30,7 @@ claude --plugin-dir .                 # lance Claude Code avec le plugin de ce d
 - `SKILL.md` reste sous 500 lignes. Les détails (syntaxe ECharts, liste des modèles…) vont dans `references/` et sont liés depuis `SKILL.md` par un lien relatif.
 - Les connaissances communes à plusieurs skills vont dans `skills/conventions/`, pas en copie dans chaque skill. Les autres skills y renvoient.
 - Les scripts d'assistance sont en Python 3, bibliothèque standard uniquement, ou en bash portable. Seule exception documentée : `openpyxl` (installé par les scripts d'installation) pour les fichiers Excel. Ils doivent fonctionner sous Linux, macOS et Windows (Git Bash) : pas de chemins codés en dur, pas de dépendance `pip`.
+- Les fichiers `.ps1` sont en UTF-8 avec BOM (Windows PowerShell 5.1 les lirait sinon en ANSI) ; `validate_skills.py` le vérifie.
 - Toute skill qui écrit sur le wiki doit : écrire le wikitext dans un fichier local, montrer le résultat (ou un `diff -u` pour une page existante) et attendre l'accord explicite de l'utilisateur avant `mediawiki write` / `upload` / `rename` / `delete`.
 - Quand une convention du wiki est découverte (nom de modèle, champ obligatoire, catégorie), consignez-la dans la référence adéquate pour que la skill s'améliore.
 - Après une modification, relancez `python3 scripts/validate_skills.py`, et ajoutez une ligne dans `CHANGELOG.md` sous « Non publié ».
