@@ -63,6 +63,32 @@ Une affirmation<ref>Auteur, ''Titre'', éditeur, année. [https://... lien]</ref
 |}
 ```
 
+### Classes de mise en forme
+
+Après `wikitable`, on peut ajouter dans `class="..."` des classes qui rendent le tableau plus lisible :
+
+| Classe | Effet |
+|---|---|
+| `table` | aligne le contenu des cellules en haut |
+| `table-striped` | alterne la couleur des lignes |
+| `table-sm` | réduit les marges intérieures des cellules |
+| `table-responsive` | ajoute une barre de défilement horizontale sur mobile |
+| `small` | réduit la taille du texte |
+| `sortable` | permet de trier en cliquant sur les en-têtes |
+
+Par défaut, utilise seulement `class="wikitable table-responsive"`. Ajoute les autres classes selon le besoin du tableau :
+
+- `table` quand des cellules ont des textes de longueurs très différentes (contenu aligné en haut plutôt qu'au milieu) ;
+- `table-striped` pour un tableau de nombreuses lignes, où l'œil doit suivre une ligne ;
+- `table-sm` et `small` pour un tableau dense (beaucoup de colonnes ou de chiffres) ;
+- `sortable` quand trier les lignes a du sens.
+
+Exemple combinant plusieurs classes :
+
+```
+{| class="wikitable table table-striped table-sm table-responsive small"
+```
+
 ## Graphiques
 
 ```

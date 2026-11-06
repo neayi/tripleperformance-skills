@@ -23,7 +23,7 @@ Applique les règles de la skill `conventions`.
 3. **Produis le wikitext** dans `tp-travail/<sujet>/tableau.wiki` :
 
    ```
-   {| class="wikitable"
+   {| class="wikitable table-responsive"
    |+ Rendements en blé selon le couvert (q/ha, 2024)
    ! Modalité !! Rendement !! Écart au témoin
    |-
@@ -35,12 +35,12 @@ Applique les règles de la skill `conventions`.
 
    - les unités vont dans l'en-tête ou la légende plutôt que dans chaque cellule ;
    - les nombres gardent la virgule décimale française sur le wiki français ;
-   - ajoute `class="wikitable sortable"` si le tri a du sens ;
+   - classes de mise en forme : par défaut `wikitable table-responsive` (défilement horizontal sur mobile) ; ajoute `table`, `table-striped`, `table-sm`, `small` ou `sortable` seulement si le tableau en a besoin. Rôle de chaque classe et cas d'usage dans [la référence wikitext](../conventions/references/wikitext.md#classes-de-mise-en-forme) ;
    - si la couleur porte une information, utilise `style="background:#…"` sur la cellule et explique-la dans la légende ;
    - les notes de bas de tableau vont sous le tableau, ou en `<ref>`.
 
 4. **Vérification cellule par cellule.** Relis l'image et compare chaque valeur. Liste à l'utilisateur les cellules illisibles ou incertaines (marque-les `?` dans le tableau) plutôt que de deviner.
 
-5. Si un nombre important de lignes/colonnes rend le tableau illisible sur mobile, propose de le scinder ou de le représenter en graphique (skill `graphique-depuis-image`).
+5. Si un nombre important de lignes/colonnes rend le tableau illisible sur mobile malgré `table-responsive`, propose de le scinder ou de le représenter en graphique (skill `graphique-depuis-image`).
 
 6. Remets le wikitext à l'utilisateur, ou insère-le dans la page cible en suivant les règles de publication de `conventions`.

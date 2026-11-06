@@ -4,6 +4,12 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ## Non publié
 
+## 0.2.3 - 2026-11-06
+
+### Modifié
+
+- `tableau-depuis-image` et référence wikitext : classes de mise en forme des tableaux (`table`, `table-striped`, `table-sm`, `table-responsive`, `small`). Par défaut `wikitable table-responsive`, les autres classes selon le besoin.
+
 ## 0.2.2 - 2026-11-02
 
 ### Corrigé
