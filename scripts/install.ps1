@@ -4,7 +4,7 @@
 
 .DESCRIPTION
     Utilise winget pour ImageMagick, Pandoc, Poppler, jq, Python, yt-dlp, Deno, Git et Claude Code,
-    et l'installeur officiel pour la CLI mediawiki.
+    et l'installeur officiel pour la CLI mediawiki. Si winget est absent, il est installé depuis GitHub.
 
 .PARAMETER Check
     Vérifie les outils, les skills et leur mise à jour, n'installe rien.
@@ -29,16 +29,19 @@ $ErrorActionPreference = 'Stop'
 
 $MediawikiInstaller = 'https://raw.githubusercontent.com/neayi/Mediawiki-LLM-Cli/main/install.ps1'
 $WikiUrl = 'https://wiki.tripleperformance.fr'
+# La CLI associe tripleperformance.fr et wiki.tripleperformance.fr au même compte
+$LoginUrl = 'https://tripleperformance.fr'
 $PluginId = 'triple-performance@triple-performance'
 $MarketplaceName = 'triple-performance'
 $MarketplaceRepo = 'neayi/tripleperformance-skills'
 $PluginManifestUrl = "https://raw.githubusercontent.com/$MarketplaceRepo/main/.claude-plugin/plugin.json"
+$WingetRelease = 'https://github.com/microsoft/winget-cli/releases/latest/download'
 
 $SkillState = 'missing'   # ok, update, missing ou unknown
+$WikiState = 'absent'     # ok, anon, unknown ou absent (CLI mediawiki manquante)
 $SkillEntries = @()
 $LatestVersion = $null
 $Workdir = $null
-$SkillsInstalled = $false
 
 # Commandes acceptées (la première trouvée suffit) et identifiant winget
 $Tools = @(
@@ -75,6 +78,48 @@ function Find-Command([string[]]$Commands) {
 
 function Find-Python { Find-Command @('python3', 'python', 'py') }
 
+function Find-Winget {
+    $found = Get-Command winget -ErrorAction SilentlyContinue
+    if ($found) { return $found.Source }
+    # Alias d'exécution créé par l'installation, absent du PATH d'un terminal déjà ouvert
+    $alias = Join-Path $env:LOCALAPPDATA 'Microsoft\WindowsApps\winget.exe'
+    if (Test-Path -LiteralPath $alias) { return $alias }
+    return $null
+}
+
+# Certains Windows (installations épurées, LTSC, Store désactivé) n'ont pas « App Installer » :
+# on installe la dernière version publiée sur GitHub, avec ses dépendances
+function Install-Winget {
+    Write-Host 'Installation de winget depuis GitHub...'
+    $arch = switch ($env:PROCESSOR_ARCHITECTURE) { 'ARM64' { 'arm64' } 'x86' { 'x86' } default { 'x64' } }
+    $temp = Join-Path ([IO.Path]::GetTempPath()) "winget-$([Guid]::NewGuid())"
+    $progress = $ProgressPreference
+    try {
+        # La barre de progression rend Invoke-WebRequest très lent sous Windows PowerShell 5.1
+        $ProgressPreference = 'SilentlyContinue'
+        New-Item -ItemType Directory -Path $temp -Force | Out-Null
+        $bundle = Join-Path $temp 'Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle'
+        $deps = Join-Path $temp 'DesktopAppInstaller_Dependencies.zip'
+        Invoke-WebRequest "$WingetRelease/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -OutFile $bundle -UseBasicParsing
+        Invoke-WebRequest "$WingetRelease/DesktopAppInstaller_Dependencies.zip" -OutFile $deps -UseBasicParsing
+        Expand-Archive -LiteralPath $deps -DestinationPath (Join-Path $temp 'deps') -Force
+        $packages = Get-ChildItem -LiteralPath (Join-Path $temp 'deps') -Recurse -Include '*.appx', '*.msix' |
+            Where-Object { $_.FullName -match "[\\_]$arch[\\_.]" }
+        foreach ($package in $packages) {
+            # Une version égale ou plus récente déjà présente fait échouer l'ajout : sans conséquence
+            try { Add-AppxPackage -Path $package.FullName -ErrorAction Stop } catch { }
+        }
+        Add-AppxPackage -Path $bundle -ErrorAction Stop
+    } catch {
+        Write-Host "  Échec de l'installation de winget : $($_.Exception.Message)" -ForegroundColor Yellow
+    } finally {
+        $ProgressPreference = $progress
+        Remove-Item -LiteralPath $temp -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    Update-SessionPath
+    return Find-Winget
+}
+
 function Test-Tool($Tool) {
     if ($Tool.Module) {
         $python = Find-Python
@@ -96,6 +141,7 @@ function Confirm-Step([string]$Message) {
 
 # Information seulement : la lecture ne demande pas de compte, le code de sortie n'en dépend pas
 function Show-WikiLogin {
+    $script:WikiState = 'absent'
     if (-not (Find-Command @('mediawiki'))) { return }
     $ErrorActionPreference = 'Continue'
     try {
@@ -105,11 +151,56 @@ function Show-WikiLogin {
         $user = $null
     }
     if (-not $user) {
+        $script:WikiState = 'unknown'
         Write-Host '  [??] Connexion au wiki non vérifiée (wiki injoignable ?)' -ForegroundColor Yellow
     } elseif ($user.id -gt 0) {
+        $script:WikiState = 'ok'
         Write-Host "  [OK] Connecté au wiki : $($user.name)" -ForegroundColor Green
     } else {
-        Write-Host "  [--] Non connecté au wiki (nécessaire pour écrire) : mediawiki login $WikiUrl" -ForegroundColor Red
+        $script:WikiState = 'anon'
+        Write-Host "  [--] Non connecté au wiki (nécessaire pour écrire) : mediawiki login $LoginUrl" -ForegroundColor Red
+    }
+}
+
+# Sans connexion, Claude peut lire le wiki mais pas y publier : on propose de se connecter tout de suite
+function Connect-Wiki {
+    if ($Check -or $WikiState -ne 'anon') { return }
+    Write-Host ''
+    Write-Host 'Pour que Claude publie des pages sur Triple Performance, connectez-vous avec votre compte du wiki'
+    Write-Host '(créez-en un sur le wiki si besoin). La commande ouvre la page Spécial:BotPasswords et vous guide'
+    Write-Host "pour créer un mot de passe de robot : accordez au moins l'édition, la création de pages et le téléversement."
+    if ($Yes -or [Console]::IsInputRedirected) {
+        Write-Host "  mediawiki login $LoginUrl"
+        return
+    }
+    $answer = Read-Host 'Se connecter au wiki maintenant ? [O/n]'
+    if ($answer -notmatch '^(|o|oui|y|yes)$') {
+        Write-Host "Vous pourrez vous connecter plus tard avec : mediawiki login $LoginUrl"
+        return
+    }
+    $ErrorActionPreference = 'Continue'
+    & mediawiki login $LoginUrl
+    Write-Host ''
+    Show-WikiLogin
+}
+
+# Le Contrôle intelligent des applications bloque à chaque lancement les programmes non signés
+# (yt-dlp, jq, pdftotext, mediawiki…). Le désactiver est définitif : c'est à l'utilisateur de choisir.
+function Show-SmartAppControl {
+    try {
+        $state = (Get-ItemProperty -LiteralPath 'HKLM:\SYSTEM\CurrentControlSet\Control\CI\Policy' -Name VerifiedAndReputablePolicyState -ErrorAction Stop).VerifiedAndReputablePolicyState
+    } catch {
+        return   # Windows 10 ou valeur absente : la fonction n'existe pas
+    }
+    if ($state -eq 1) {
+        Write-Host '  [!!] Contrôle intelligent des applications activé : il bloque les outils non signés (yt-dlp, jq, pdftotext, mediawiki…)' -ForegroundColor Yellow
+        Write-Host '       Pour les utiliser, désactivez-le : Sécurité Windows > Contrôle des applications et du navigateur >' -ForegroundColor Yellow
+        Write-Host '       Paramètres du Contrôle intelligent des applications > Désactivé.' -ForegroundColor Yellow
+        Write-Host '       Attention : ce choix est définitif, Windows ne permet de le réactiver qu''en le réinstallant.' -ForegroundColor Yellow
+    } elseif ($state -eq 2) {
+        Write-Host '  [!!] Contrôle intelligent des applications en évaluation : Windows peut l''activer et bloquer les outils non signés' -ForegroundColor Yellow
+        Write-Host '       Si un outil est bloqué (« éditeur non vérifié »), désactivez-le dans Sécurité Windows >' -ForegroundColor Yellow
+        Write-Host '       Contrôle des applications et du navigateur (choix définitif).' -ForegroundColor Yellow
     }
 }
 
@@ -206,26 +297,51 @@ function Show-WorkdirHint {
     }
 }
 
+# Raccourci dans le dossier de travail : un double-clic depuis l'Explorateur ouvre Claude Code dans ce dossier.
+# PowerShell plutôt que Windows Terminal, qui n'est pas toujours installé.
+function New-ClaudeShortcut {
+    foreach ($entry in @($SkillEntries | Where-Object { $_.projectPath })) {
+        $file = Join-Path $entry.projectPath 'Ouvrir Claude.lnk'
+        $exists = Test-Path -LiteralPath $file
+        try {
+            $powershell = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+            $shortcut = (New-Object -ComObject WScript.Shell).CreateShortcut($file)
+            $shortcut.TargetPath = $powershell
+            # L'Explorateur a pu démarrer avant l'installation : PATH relu dans le registre
+            $shortcut.Arguments = '-NoExit -Command "$env:Path = [Environment]::GetEnvironmentVariable(''Path'', ''Machine'') + '';'' + [Environment]::GetEnvironmentVariable(''Path'', ''User''); claude"'
+            $shortcut.WorkingDirectory = $entry.projectPath
+            $shortcut.Description = 'Ouvrir Claude Code dans le dossier Triple Performance'
+            $claude = Find-Command @('claude')
+            $shortcut.IconLocation = if ($claude -and $claude -like '*.exe') { "$claude,0" } else { "$powershell,0" }
+            $shortcut.Save()
+            if (-not $exists) { Write-Host "  Raccourci créé : $file" }
+        } catch {
+            Write-Host '  Raccourci « Ouvrir Claude » non créé.' -ForegroundColor Yellow
+        }
+    }
+}
+
 function Show-FirstSteps {
+    $folder = @($SkillEntries | Where-Object { $_.projectPath })[0].projectPath
     Write-Host ''
-    Write-Host 'Pour commencer :'
-    Write-Host '  1. Ouvrez un NOUVEAU terminal (celui-ci garde son ancien PATH) et placez-vous dans votre dossier de travail :'
-    Write-Host "       cd `"$($SkillEntries[0].projectPath)`""
-    Write-Host '  2. Lancez Claude Code (au premier lancement, connectez-vous à votre compte Claude) :'
-    Write-Host '       claude'
-    Write-Host "  3. Demandez-lui par exemple d'importer une vidéo YouTube :"
+    Write-Host "Prochaines étapes, dans votre dossier de travail ($folder) :"
+    Write-Host '  1. Déposez-y les documents à partir desquels rédiger : documents Word ou PDF, photos,'
+    Write-Host '     fichiers Excel, archives zip…'
+    Write-Host '  2. Double-cliquez sur « Ouvrir Claude » dans ce dossier pour lancer Claude Code.'
+    Write-Host '     Au premier lancement, connectez-vous à votre compte Claude.'
+    Write-Host '  3. Demandez-lui de créer ou de mettre à jour des pages Triple Performance à partir de ces documents :'
+    Write-Host '       Crée une page Triple Performance à partir de compte-rendu-essai.pdf'
+    Write-Host '       Mets à jour la page « Couverts végétaux » avec les photos de ce dossier'
     Write-Host '       Importe cette vidéo : https://www.youtube.com/watch?v=KZ5Tz3IGoSI'
 }
 
-# La nouvelle fenêtre hérite du PATH rechargé par ce script
-function Open-Claude {
+# Ouvre le dossier de travail dans l'Explorateur, pour y déposer les documents
+function Open-Workdir {
     $folders = @($SkillEntries | Where-Object { $_.projectPath })
-    if ($Check -or $Yes -or $folders.Count -eq 0 -or [Console]::IsInputRedirected) { return }
-    Write-Host ''
-    $answer = Read-Host 'Ouvrir Claude Code maintenant dans votre dossier de travail ? [O/n]'
-    if ($answer -match '^(|o|oui|y|yes)$') {
-        Start-Process powershell -WorkingDirectory $folders[0].projectPath -ArgumentList '-NoExit', '-Command', 'claude'
-    }
+    if ($Check -or $folders.Count -eq 0) { return }
+    try {
+        Start-Process explorer.exe -ArgumentList "`"$($folders[0].projectPath)`""
+    } catch { }
 }
 
 function Select-Workdir {
@@ -266,7 +382,6 @@ function Install-Skills {
         & claude plugin marketplace add $MarketplaceRepo --scope local
         if ($LASTEXITCODE -eq 0) { & claude plugin install $PluginId --scope local }
         if ($LASTEXITCODE -eq 0) {
-            $script:SkillsInstalled = $true
             Write-WorkspaceGuide
         } else {
             Write-Host "  Échec de l'installation des skills." -ForegroundColor Yellow
@@ -310,6 +425,7 @@ foreach ($tool in $Tools) {
 }
 Show-Skills
 Show-WikiLogin
+Show-SmartAppControl
 
 # Une mise à jour disponible n'empêche pas de travailler : pas d'échec avec -Check
 if ($Missing.Count -eq 0 -and $SkillState -ne 'missing' -and ($SkillState -ne 'update' -or $Check)) {
@@ -318,8 +434,14 @@ if ($Missing.Count -eq 0 -and $SkillState -ne 'missing' -and ($SkillState -ne 'u
     if ($SkillState -eq 'update') {
         Write-Host "Mise à jour des skills disponible : relancez le script d'installation (sans -Check)."
     }
-    Show-WorkdirHint
-    Open-Claude
+    if ($Check) {
+        Show-WorkdirHint
+    } elseif (@($SkillEntries | Where-Object { $_.projectPath }).Count -gt 0) {
+        New-ClaudeShortcut
+        Connect-Wiki
+        Show-FirstSteps
+        Open-Workdir
+    }
     exit 0
 }
 
@@ -332,12 +454,10 @@ if ($Check) {
 }
 
 $WingetTools = @($Missing | Where-Object { $_.WingetId })
-if ($WingetTools.Count -gt 0 -and -not (Get-Command winget -ErrorAction SilentlyContinue)) {
-    Write-Host "winget est introuvable. Installez « App Installer » depuis le Microsoft Store, puis relancez ce script." -ForegroundColor Yellow
-    exit 1
-}
+$Winget = Find-Winget
 
 Write-Host ''
+if ($WingetTools.Count -gt 0 -and -not $Winget) { Write-Host '  À installer : winget (gestionnaire de paquets de Windows, depuis GitHub)' }
 foreach ($tool in $Missing) { Write-Host "  À installer : $($tool.Label)" }
 if ($SkillState -eq 'missing' -or $SkillState -eq 'unknown') {
     Select-Workdir
@@ -347,12 +467,20 @@ if ($Missing.Count -gt 0 -or $SkillState -ne 'update') {
     if (-not (Confirm-Step 'Continuer ?')) { Write-Host 'Abandon.'; exit 1 }
 }
 
+if ($WingetTools.Count -gt 0 -and -not $Winget) {
+    $Winget = Install-Winget
+    if (-not $Winget) {
+        Write-Host "winget est introuvable. Installez « App Installer » depuis le Microsoft Store, puis relancez ce script." -ForegroundColor Yellow
+        exit 1
+    }
+}
+
 foreach ($tool in $WingetTools) {
     Update-SessionPath
     # Un paquet précédent a pu l'installer comme dépendance (Deno avec yt-dlp)
     if (Test-Tool $tool) { continue }
     Write-Host "Installation de $($tool.WingetId)..."
-    winget install --id $tool.WingetId --exact --silent --accept-package-agreements --accept-source-agreements
+    & $Winget install --id $tool.WingetId --exact --silent --accept-package-agreements --accept-source-agreements
     if ($LASTEXITCODE -ne 0) {
         Write-Host "  Échec de l'installation de $($tool.WingetId) (code $LASTEXITCODE)." -ForegroundColor Yellow
     }
@@ -383,11 +511,13 @@ if ($SkillState -eq 'missing' -and (Find-Command @('claude'))) { Install-Skills 
 elseif ($SkillState -eq 'update') { Update-Skills }
 Read-Skills
 Grant-PluginRead
+New-ClaudeShortcut
 
 Write-Host ''
 Write-Host 'Vérification finale :'
 Show-Skills
 Show-WikiLogin
+Show-SmartAppControl
 
 Write-Host ''
 $StillMissing = @($Tools | Where-Object { -not (Test-Tool $_) })
@@ -400,10 +530,10 @@ if ($StillMissing.Count -gt 0 -or $SkillState -eq 'missing') {
 }
 
 Write-Host 'Installation terminée.' -ForegroundColor Green
-if ($SkillsInstalled -and $SkillEntries.Count -gt 0) {
+Connect-Wiki
+if (@($SkillEntries | Where-Object { $_.projectPath }).Count -gt 0) {
     Show-FirstSteps
+    Open-Workdir
 } else {
     Write-Host 'Ouvrez un NOUVEAU terminal pour utiliser ces outils : celui-ci garde son ancien PATH.'
-    Show-WorkdirHint
 }
-Open-Claude

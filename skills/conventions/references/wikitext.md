@@ -101,3 +101,7 @@ Les données sont dans la sous-page JSON (modèle de contenu `json`) : options E
 
 - `{{Page en cours de rédaction}}` : signale une page incomplète.
 - `{{Clear}}` : force le retour sous les éléments flottants (images, graphiques).
+
+## Numéros de téléphone
+
+Dans les paramètres de modèles (`Téléphone` des pages `Structure:`…), écris les numéros au format international sans le 0 initial : `+33 6 12 34 56 78`, et non `+33 06 12 34 56 78`.

@@ -2,7 +2,18 @@
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage [sémantique](https://semver.org/lang/fr/).
 
-## Non publié
+## 0.2.4 - 2026-11-12
+
+### Ajouté
+
+- `install.ps1` : installe winget depuis GitHub (avec ses dépendances) quand il est absent, au lieu de s'arrêter.
+- `install.ps1` : signale le Contrôle intelligent des applications de Windows 11, qui bloque les outils non signés, et explique comment le désactiver (choix définitif).
+- Scripts d'installation : raccourci « Ouvrir Claude » dans le dossier de travail (Windows : `.lnk` qui lance Claude Code dans PowerShell ; macOS : `.command` ouvert par Terminal), pour lancer Claude Code depuis l'Explorateur ou le Finder.
+- Scripts d'installation : à la fin, ouvrent le dossier de travail dans l'Explorateur, le Finder ou le gestionnaire de fichiers et expliquent les prochaines étapes (déposer les documents, lancer Claude, demander une page), au lieu de proposer de lancer Claude Code. Juste avant, si l'utilisateur n'est pas connecté au wiki, ils proposent de lancer `mediawiki login https://tripleperformance.fr`.
+
+### Modifié
+
+- Référence wikitext : format des numéros de téléphone (`+33 6 12 34 56 78`, sans le 0 initial).
 
 ## 0.2.3 - 2026-11-06
 

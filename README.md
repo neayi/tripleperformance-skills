@@ -92,7 +92,7 @@ La commande ouvre la page `Spécial:BotPasswords` et vous guide pour créer un m
 
 Le script d'installation vous demande où créer votre dossier de travail (par défaut `Documents\Triple Performance` sous Windows, `~/Triple Performance` sous Linux et macOS) et y installe les skills. Elles ne sont actives que dans ce dossier. Il y ajoute aussi un fichier `CLAUDE.md`, qui indique à Claude que vos demandes concernent le wiki ; vous pouvez le compléter, il n'est jamais écrasé.
 
-À la fin de l'installation, le script propose de lancer Claude Code dans ce dossier. Sinon, ouvrez un nouveau terminal, placez-vous dans ce dossier et lancez `claude`. Au premier lancement, connectez-vous à votre compte Claude.
+À la fin de l'installation, si vous n'êtes pas encore connecté au wiki, le script propose de lancer `mediawiki login https://tripleperformance.fr` (voir ci-dessus). Il ouvre ensuite ce dossier dans l'Explorateur de fichiers (ou le Finder) et rappelle les prochaines étapes : y déposer vos documents (Word, PDF, photos, Excel, archives zip…), lancer Claude Code puis lui demander de créer ou de mettre à jour des pages à partir de ces documents. Sous Windows et macOS, le raccourci « Ouvrir Claude » placé dans le dossier lance Claude Code au bon endroit ; sous Linux, ouvrez un terminal dans ce dossier et lancez `claude`. Au premier lancement, connectez-vous à votre compte Claude.
 
 Pour savoir si une nouvelle version des skills existe, relancez la commande de vérification ; pour l'installer, relancez la commande d'installation. Redémarrez ensuite Claude Code.
 

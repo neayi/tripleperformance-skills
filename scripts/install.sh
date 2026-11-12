@@ -44,6 +44,9 @@ YTDLP_URL="https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp"
 DENO_INSTALLER="https://deno.land/install.sh"
 CLAUDE_INSTALLER="https://claude.ai/install.sh"
 WIKI_URL="https://wiki.tripleperformance.fr"
+# La CLI associe tripleperformance.fr et wiki.tripleperformance.fr au même compte
+LOGIN_URL="https://tripleperformance.fr"
+WIKI_STATE="absent"   # ok, anon, unknown ou absent (CLI mediawiki manquante)
 PLUGIN_ID="triple-performance@triple-performance"
 MARKETPLACE_NAME="triple-performance"
 MARKETPLACE_REPO="neayi/tripleperformance-skills"
@@ -149,16 +152,43 @@ has_any() {
 # Information seulement : la lecture ne demande pas de compte, le code de sortie n'en dépend pas
 show_wiki_login() {
   local output name
+  WIKI_STATE=absent
   has_any mediawiki || return 0
   output="$(mediawiki api "$WIKI_URL/api.php?action=query&meta=userinfo&format=json" 2>/dev/null)" || output=""
   name="$(printf '%s\n' "$output" | sed -n 's/^ *"name": "\(.*\)",\{0,1\}$/\1/p')"
   if [ -z "$name" ]; then
+    WIKI_STATE=unknown
     warn "  ? Connexion au wiki non vérifiée (wiki injoignable ?)"
   elif printf '%s\n' "$output" | grep -q '"anon": true'; then
-    ko "Non connecté au wiki (nécessaire pour écrire) : mediawiki login $WIKI_URL"
+    WIKI_STATE=anon
+    ko "Non connecté au wiki (nécessaire pour écrire) : mediawiki login $LOGIN_URL"
   else
+    WIKI_STATE=ok
     ok "Connecté au wiki : $name"
   fi
+}
+
+# Sans connexion, Claude peut lire le wiki mais pas y publier : on propose de se connecter tout de suite
+connect_wiki() {
+  local answer=""
+  if [ "$CHECK_REQUESTED" -eq 1 ] || [ "$WIKI_STATE" != "anon" ]; then return 0; fi
+  info ""
+  info "Pour que Claude publie des pages sur Triple Performance, connectez-vous avec votre compte du wiki"
+  info "(créez-en un sur le wiki si besoin). La commande ouvre la page Spécial:BotPasswords et vous guide"
+  info "pour créer un mot de passe de robot : accordez au moins l'édition, la création de pages et le téléversement."
+  if [ "$ASSUME_YES" -eq 1 ] || [ ! -t 0 ]; then
+    info "  mediawiki login $LOGIN_URL"
+    return 0
+  fi
+  printf 'Se connecter au wiki maintenant ? [O/n] '
+  read -r answer
+  case "$answer" in
+    ""|o|O|oui|y|Y|yes) ;;
+    *) info "Vous pourrez vous connecter plus tard avec : mediawiki login $LOGIN_URL"; return 0 ;;
+  esac
+  mediawiki login "$LOGIN_URL" || true
+  info ""
+  show_wiki_login
 }
 
 # --- Skills ----------------------------------------------------------------
@@ -166,7 +196,6 @@ show_wiki_login() {
 SKILL_STATE=""     # ok, update, missing ou unknown
 SKILL_ENTRIES=()   # "portée|version|dossier", dossier vide pour la portée user
 LATEST_VERSION=""
-SKILLS_INSTALLED=0
 
 # Un dossier supprimé depuis l'installation ne compte plus
 SKILL_PARSER='
@@ -257,32 +286,72 @@ show_workdir_hint() {
   if [ -n "$dir" ]; then info "Pour travailler, lancez claude dans ce dossier : cd \"$dir\""; fi
 }
 
+# macOS : un double-clic sur ce fichier depuis le Finder ouvre Claude Code dans le dossier, dans Terminal
+create_shortcut() {
+  local line scope version dir file created
+  [ "$OS" = "Darwin" ] || return 0
+  for line in ${SKILL_ENTRIES[@]+"${SKILL_ENTRIES[@]}"}; do
+    IFS='|' read -r scope version dir <<<"$line"
+    [ -n "$dir" ] || continue
+    file="$dir/Ouvrir Claude.command"
+    created=0
+    [ -e "$file" ] || created=1
+    # Le PATH de Terminal peut ne pas encore contenir les dossiers des installeurs
+    if cat >"$file" <<'EOF' && chmod +x "$file"; then
+#!/bin/bash
+# Ouvre Claude Code dans ce dossier (double-clic depuis le Finder)
+cd "$(dirname "$0")" || exit 1
+export PATH="$HOME/.local/bin:$HOME/.deno/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
+exec claude
+EOF
+      if [ "$created" -eq 1 ]; then info "  Raccourci créé : $file"; fi
+    else
+      warn "  Raccourci « Ouvrir Claude » non créé."
+    fi
+  done
+}
+
+workdir() {
+  local line scope version dir
+  for line in ${SKILL_ENTRIES[@]+"${SKILL_ENTRIES[@]}"}; do
+    IFS='|' read -r scope version dir <<<"$line"
+    if [ -n "$dir" ]; then printf '%s\n' "$dir"; return 0; fi
+  done
+  return 1
+}
+
 show_first_steps() {
-  local scope version dir
-  IFS='|' read -r scope version dir <<<"${SKILL_ENTRIES[0]}"
+  local dir
+  dir="$(workdir)" || return 0
   info ""
-  info "Pour commencer :"
-  info "  1. Ouvrez un nouveau terminal et placez-vous dans votre dossier de travail :"
-  info "       cd \"$dir\""
-  info "  2. Lancez Claude Code (au premier lancement, connectez-vous à votre compte Claude) :"
-  info "       claude"
-  info "  3. Demandez-lui par exemple d'importer une vidéo YouTube :"
+  info "Prochaines étapes, dans votre dossier de travail ($dir) :"
+  info "  1. Déposez-y les documents à partir desquels rédiger : documents Word ou PDF, photos,"
+  info "     fichiers Excel, archives zip…"
+  if [ "$OS" = "Darwin" ]; then
+    info "  2. Double-cliquez sur « Ouvrir Claude » dans ce dossier pour lancer Claude Code."
+  else
+    info "  2. Ouvrez un nouveau terminal dans ce dossier et lancez Claude Code :"
+    info "       cd \"$dir\" && claude"
+  fi
+  info "     Au premier lancement, connectez-vous à votre compte Claude."
+  info "  3. Demandez-lui de créer ou de mettre à jour des pages Triple Performance à partir de ces documents :"
+  info "       Crée une page Triple Performance à partir de compte-rendu-essai.pdf"
+  info "       Mets à jour la page « Couverts végétaux » avec les photos de ce dossier"
   info "       Importe cette vidéo : https://www.youtube.com/watch?v=KZ5Tz3IGoSI"
 }
 
-# Le script a déjà le bon PATH : claude démarre ici, sans nouveau terminal
-offer_claude() {
-  local answer="" scope version dir
-  if [ "$CHECK_REQUESTED" -eq 1 ] || [ "$ASSUME_YES" -eq 1 ] || [ ! -t 0 ] || [ ! -t 1 ]; then return 0; fi
-  [ "${#SKILL_ENTRIES[@]}" -gt 0 ] || return 0
-  IFS='|' read -r scope version dir <<<"${SKILL_ENTRIES[0]}"
-  [ -n "$dir" ] || return 0
-  info ""
-  printf 'Lancer Claude Code maintenant dans votre dossier de travail ? [O/n] '
-  read -r answer
-  case "$answer" in
-    ""|o|O|oui|y|Y|yes) cd "$dir"; exec claude ;;
-  esac
+# Ouvre le dossier de travail dans le gestionnaire de fichiers, pour y déposer les documents
+open_workdir() {
+  local dir
+  dir="$(workdir)" || return 0
+  if [ "$OS" = "Darwin" ]; then
+    open "$dir" >/dev/null 2>&1 || true
+  elif [ "$ENV_LABEL" = "Linux (WSL)" ] && command -v explorer.exe >/dev/null 2>&1; then
+    # explorer.exe renvoie toujours un code d'erreur
+    explorer.exe "$(wslpath -w "$dir")" >/dev/null 2>&1 || true
+  elif { [ -n "${DISPLAY:-}" ] || [ -n "${WAYLAND_DISPLAY:-}" ]; } && command -v xdg-open >/dev/null 2>&1; then
+    xdg-open "$dir" >/dev/null 2>&1 &
+  fi
 }
 
 choose_workdir() {
@@ -325,7 +394,6 @@ install_skills() {
     claude plugin marketplace add "$MARKETPLACE_REPO" --scope local
     claude plugin install "$PLUGIN_ID" --scope local
   ); then
-    SKILLS_INSTALLED=1
     write_workspace_guide
   else
     warn "Échec de l'installation des skills."
@@ -379,12 +447,14 @@ check_tools() {
     if [ "$SKILL_STATE" = "update" ]; then
       info "Mise à jour des skills disponible : relancez le script d'installation (sans --check)."
     fi
-    if [ "$SKILLS_INSTALLED" -eq 1 ]; then
-      show_first_steps
-    else
+    if [ "$CHECK_REQUESTED" -eq 1 ]; then
       show_workdir_hint
+    else
+      create_shortcut
+      connect_wiki
+      show_first_steps
+      open_workdir
     fi
-    offer_claude
     exit 0
   fi
 
