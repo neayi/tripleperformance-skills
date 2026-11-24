@@ -35,6 +35,7 @@ $PluginId = 'triple-performance@triple-performance'
 $MarketplaceName = 'triple-performance'
 $MarketplaceRepo = 'neayi/tripleperformance-skills'
 $PluginManifestUrl = "https://raw.githubusercontent.com/$MarketplaceRepo/main/.claude-plugin/plugin.json"
+$InstallerUrl = "https://raw.githubusercontent.com/$MarketplaceRepo/main/scripts/install.ps1"
 $WingetRelease = 'https://github.com/microsoft/winget-cli/releases/latest/download'
 
 $SkillState = 'missing'   # ok, update, missing ou unknown
@@ -297,27 +298,69 @@ function Show-WorkdirHint {
     }
 }
 
-# Raccourci dans le dossier de travail : un double-clic depuis l'Explorateur ouvre Claude Code dans ce dossier.
-# PowerShell plutôt que Windows Terminal, qui n'est pas toujours installé.
+# Claude Desktop : paquet MSIX publié par Anthropic, ou ancien installeur dans %LOCALAPPDATA%\AnthropicClaude
+function Test-ClaudeDesktop {
+    if ($env:LOCALAPPDATA -and (Test-Path -LiteralPath (Join-Path $env:LOCALAPPDATA 'AnthropicClaude\claude.exe'))) { return $true }
+    try {
+        return [bool](@(Get-AppxPackage -Name 'Claude' -ErrorAction Stop | Where-Object { $_.Publisher -like '*Anthropic*' }).Count)
+    } catch {
+        return $false
+    }
+}
+
+# Raccourcis dans le dossier de travail : un double-clic depuis l'Explorateur ouvre Claude Code dans ce dossier,
+# ou met à jour les skills. Avec Claude Desktop, le raccourci lance directement claude.exe --desktop ;
+# sinon, Claude Code s'ouvre dans PowerShell (plutôt que Windows Terminal, qui n'est pas toujours installé).
 function New-ClaudeShortcut {
     foreach ($entry in @($SkillEntries | Where-Object { $_.projectPath })) {
         $file = Join-Path $entry.projectPath 'Ouvrir Claude.lnk'
         $exists = Test-Path -LiteralPath $file
         try {
             $powershell = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+            $claude = Find-Command @('claude')
             $shortcut = (New-Object -ComObject WScript.Shell).CreateShortcut($file)
-            $shortcut.TargetPath = $powershell
-            # L'Explorateur a pu démarrer avant l'installation : PATH relu dans le registre
-            $shortcut.Arguments = '-NoExit -Command "$env:Path = [Environment]::GetEnvironmentVariable(''Path'', ''Machine'') + '';'' + [Environment]::GetEnvironmentVariable(''Path'', ''User''); claude"'
+            if ($claude -like '*.exe' -and (Test-ClaudeDesktop)) {
+                # Chemin complet : pas besoin du PATH. Réduite, la console de claude.exe ne fait que passer.
+                $shortcut.TargetPath = $claude
+                $shortcut.Arguments = '--desktop'
+                $shortcut.WindowStyle = 7
+            } else {
+                $shortcut.TargetPath = $powershell
+                # L'Explorateur a pu démarrer avant l'installation : PATH relu dans le registre
+                $shortcut.Arguments = '-NoExit -Command "$env:Path = [Environment]::GetEnvironmentVariable(''Path'', ''Machine'') + '';'' + [Environment]::GetEnvironmentVariable(''Path'', ''User''); claude"'
+                $shortcut.WindowStyle = 1
+            }
             $shortcut.WorkingDirectory = $entry.projectPath
             $shortcut.Description = 'Ouvrir Claude Code dans le dossier Triple Performance'
-            $claude = Find-Command @('claude')
-            $shortcut.IconLocation = if ($claude -and $claude -like '*.exe') { "$claude,0" } else { "$powershell,0" }
+            $shortcut.IconLocation = if ($claude -like '*.exe') { "$claude,0" } else { "$powershell,0" }
             $shortcut.Save()
             if (-not $exists) { Write-Host "  Raccourci créé : $file" }
         } catch {
             Write-Host '  Raccourci « Ouvrir Claude » non créé.' -ForegroundColor Yellow
         }
+        New-UpdateScript $entry.projectPath
+    }
+}
+
+# « Mettre à jour les skills.bat » : relance ce script, téléchargé à nouveau depuis GitHub.
+# cmd lit les .bat dans la page de code OEM : texte en ASCII seulement.
+function New-UpdateScript([string]$Folder) {
+    $file = Join-Path $Folder 'Mettre à jour les skills.bat'
+    $exists = Test-Path -LiteralPath $file
+    $text = @"
+@echo off
+rem Met a jour les skills Triple Performance et les outils dont elles ont besoin
+set "TP_DOSSIER=%~dp0"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "`$f = Join-Path `$env:TEMP 'tp-install.ps1'; try { Invoke-RestMethod '$InstallerUrl' -OutFile `$f } catch { Write-Host 'Telechargement du script d''installation impossible : verifiez votre connexion a Internet.' -ForegroundColor Yellow; exit 1 }; & `$f -Dossier `$env:TP_DOSSIER.TrimEnd('\')"
+echo.
+pause
+
+"@
+    try {
+        [IO.File]::WriteAllText($file, ($text -replace "`r?`n", "`r`n"), [Text.Encoding]::ASCII)
+        if (-not $exists) { Write-Host "  Raccourci créé : $file" }
+    } catch {
+        Write-Host '  Raccourci « Mettre à jour les skills » non créé.' -ForegroundColor Yellow
     }
 }
 
@@ -327,7 +370,8 @@ function Show-FirstSteps {
     Write-Host "Prochaines étapes, dans votre dossier de travail ($folder) :"
     Write-Host '  1. Déposez-y les documents à partir desquels rédiger : documents Word ou PDF, photos,'
     Write-Host '     fichiers Excel, archives zip…'
-    Write-Host '  2. Double-cliquez sur « Ouvrir Claude » dans ce dossier pour lancer Claude Code.'
+    $app = if ((Find-Command @('claude')) -like '*.exe' -and (Test-ClaudeDesktop)) { ' dans Claude Desktop' } else { '' }
+    Write-Host "  2. Double-cliquez sur « Ouvrir Claude » dans ce dossier pour lancer Claude Code$app."
     Write-Host '     Au premier lancement, connectez-vous à votre compte Claude.'
     Write-Host '  3. Demandez-lui de créer ou de mettre à jour des pages Triple Performance à partir de ces documents :'
     Write-Host '       Crée une page Triple Performance à partir de compte-rendu-essai.pdf'

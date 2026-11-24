@@ -51,6 +51,7 @@ PLUGIN_ID="triple-performance@triple-performance"
 MARKETPLACE_NAME="triple-performance"
 MARKETPLACE_REPO="neayi/tripleperformance-skills"
 PLUGIN_MANIFEST_URL="https://raw.githubusercontent.com/$MARKETPLACE_REPO/main/.claude-plugin/plugin.json"
+INSTALLER_URL="https://raw.githubusercontent.com/$MARKETPLACE_REPO/main/scripts/install.sh"
 DEFAULT_WORKDIR="$HOME/Triple Performance"
 
 if [ -t 1 ]; then
@@ -286,29 +287,78 @@ show_workdir_hint() {
   if [ -n "$dir" ]; then info "Pour travailler, lancez claude dans ce dossier : cd \"$dir\""; fi
 }
 
-# macOS : un double-clic sur ce fichier depuis le Finder ouvre Claude Code dans le dossier, dans Terminal
+# Raccourcis du dossier de travail. macOS : « Ouvrir Claude » lance Claude Code dans Claude Desktop s'il est
+# installé, sinon dans Terminal.
+# macOS et Linux : « Mettre à jour les skills » relance ce script, téléchargé à nouveau depuis GitHub.
+# Le PATH de Terminal peut ne pas encore contenir les dossiers des installeurs.
 create_shortcut() {
-  local line scope version dir file created
-  [ "$OS" = "Darwin" ] || return 0
+  local line scope version dir
   for line in ${SKILL_ENTRIES[@]+"${SKILL_ENTRIES[@]}"}; do
     IFS='|' read -r scope version dir <<<"$line"
     [ -n "$dir" ] || continue
-    file="$dir/Ouvrir Claude.command"
-    created=0
-    [ -e "$file" ] || created=1
-    # Le PATH de Terminal peut ne pas encore contenir les dossiers des installeurs
-    if cat >"$file" <<'EOF' && chmod +x "$file"; then
+    if [ "$OS" = "Darwin" ]; then
+      write_shortcut "$dir/Ouvrir Claude.command" "Ouvrir Claude" < <(open_script)
+      write_shortcut "$dir/Mettre à jour les skills.command" "Mettre à jour les skills" < <(update_script)
+    else
+      write_shortcut "$dir/Mettre à jour les skills.sh" "Mettre à jour les skills" < <(update_script)
+    fi
+  done
+}
+
+# Claude Desktop (macOS) : identifiant com.anthropic.claudefordesktop
+has_claude_desktop() {
+  [ "$OS" = "Darwin" ] || return 1
+  [ -d /Applications/Claude.app ] || [ -d "$HOME/Applications/Claude.app" ] && return 0
+  [ -n "$(mdfind "kMDItemCFBundleIdentifier == 'com.anthropic.claudefordesktop'" 2>/dev/null | head -n 1)" ]
+}
+
+# Avec Claude Desktop, Claude Code s'ouvre dans l'application plutôt que dans Terminal
+open_script() {
+  cat <<'EOF'
 #!/bin/bash
 # Ouvre Claude Code dans ce dossier (double-clic depuis le Finder)
 cd "$(dirname "$0")" || exit 1
 export PATH="$HOME/.local/bin:$HOME/.deno/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
-exec claude
 EOF
-      if [ "$created" -eq 1 ]; then info "  Raccourci créé : $file"; fi
-    else
-      warn "  Raccourci « Ouvrir Claude » non créé."
-    fi
-  done
+  if has_claude_desktop; then
+    cat <<'EOF'
+claude --desktop && exit 0
+printf '\nAppuyez sur Entrée pour fermer cette fenêtre.'
+read -r _
+EOF
+  else
+    echo 'exec claude'
+  fi
+}
+
+update_script() {
+  cat <<'EOF'
+#!/bin/bash
+# Met à jour les skills Triple Performance et les outils dont elles ont besoin
+cd "$(dirname "$0")" || exit 1
+export PATH="$HOME/.local/bin:$HOME/.deno/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
+EOF
+  printf 'url="%s"\n' "$INSTALLER_URL"
+  cat <<'EOF'
+if script="$(curl -fsSL "$url")"; then
+  bash -c "$script" install.sh --dir "$PWD"
+else
+  echo "Téléchargement du script d'installation impossible : vérifiez votre connexion à Internet."
+fi
+printf '\nAppuyez sur Entrée pour fermer cette fenêtre.'
+read -r _
+EOF
+}
+
+# Écrit l'entrée standard dans un fichier exécutable
+write_shortcut() {
+  local file="$1" label="$2" created=0
+  [ -e "$file" ] || created=1
+  if cat >"$file" && chmod +x "$file"; then
+    if [ "$created" -eq 1 ]; then info "  Raccourci créé : $file"; fi
+  else
+    warn "  Raccourci « $label » non créé."
+  fi
 }
 
 workdir() {
@@ -328,7 +378,11 @@ show_first_steps() {
   info "  1. Déposez-y les documents à partir desquels rédiger : documents Word ou PDF, photos,"
   info "     fichiers Excel, archives zip…"
   if [ "$OS" = "Darwin" ]; then
-    info "  2. Double-cliquez sur « Ouvrir Claude » dans ce dossier pour lancer Claude Code."
+    if has_claude_desktop; then
+      info "  2. Double-cliquez sur « Ouvrir Claude » dans ce dossier pour lancer Claude Code dans Claude Desktop."
+    else
+      info "  2. Double-cliquez sur « Ouvrir Claude » dans ce dossier pour lancer Claude Code."
+    fi
   else
     info "  2. Ouvrez un nouveau terminal dans ce dossier et lancez Claude Code :"
     info "       cd \"$dir\" && claude"

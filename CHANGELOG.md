@@ -4,12 +4,16 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ## Non publié
 
+## 0.3.1 - 2026-11-24
+
 ### Ajouté
 
+- Scripts d'installation : raccourci « Mettre à jour les skills » (`.bat` sous Windows, `.command` sous macOS, `.sh` sous Linux) dans le dossier de travail, qui relance la dernière version du script d'installation.
 - `nouvel-article` : paramètres du modèle Contributeur et lien entre `Nom de l'agriculteur` et la page `Utilisateur:`.
 
 ### Modifié
 
+- Scripts d'installation : si Claude Desktop est installé (Windows, macOS), le raccourci « Ouvrir Claude » lance `claude --desktop`, qui ouvre Claude Code dans l'application (sous Windows, directement `claude.exe`, sans fenêtre PowerShell).
 - `images`, `conventions` : galeries entourées de `<noautolinks>`, LinkTitles posant sinon des liens dans les noms de fichiers.
 - Tableaux (`conventions`, `tableau-depuis-image`) : classe par défaut `wikitable` seule ; `table-responsive` réservée aux tableaux de plus de 10 colonnes.
 
