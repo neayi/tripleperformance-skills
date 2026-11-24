@@ -1,48 +1,122 @@
 ---
 name: traduction
-description: Traduit une page de Triple Performance d'une version linguistique du wiki vers une autre (par exemple de wiki.tripleperformance.fr vers en.tripleperformance.ag), en adaptant les modèles, catégories et noms de fichiers. À utiliser quand l'utilisateur veut traduire, porter ou publier une page dans une autre langue.
+description: Traduit une page de Triple Performance d'une version linguistique du wiki vers une autre (par exemple de wiki.tripleperformance.fr vers en.tripleperformance.ag), ou vers toutes les langues, en gardant intacts modèles, paramètres, fichiers et sous-pages JSON, puis relie toutes les versions par des liens interlangues. À utiliser quand l'utilisateur veut traduire, porter ou publier une page dans une autre langue, retraduire ou mettre à jour une traduction, ou réparer les liens interlangues entre les versions d'une page.
 ---
 
 # Traduire une page entre deux wikis
 
-Applique les règles de la skill `conventions`.
+Applique les règles de la skill `conventions`. Ce qui ne se traduit pas (modèles, paramètres protégés, fichiers, sous-pages JSON, liens) est détaillé dans [references/parametres-proteges.md](references/parametres-proteges.md) : lis-la avant de traduire.
+
+Langues des wikis : `ar de el en es fi fr hu it nl pl pt`. « Toutes les langues » veut dire toutes sauf la langue source.
 
 ## Déroulé
 
-1. **Identifie la source et la cible.** Langue source, langue cible, URL de la page source. Lis la source dans `tp-travail/<sujet>/source.wiki` :
+### 1. Identifier la source et la cible
 
-   ```bash
-   mediawiki read "https://wiki.tripleperformance.fr/wiki/<Titre>" > tp-travail/<sujet>/source.wiki
-   ```
+Langue source, langue(s) cible(s), URL de la page source. Lis la source :
 
-2. **Vérifie que la page n'existe pas déjà dans la langue cible.** Regarde d'abord ses liens interlangues : `python3 ${CLAUDE_PLUGIN_ROOT}/skills/recherche/scripts/search.py --langlinks "<Titre>"` (ou la ligne `[[<cible>:...]]` en fin de wikitext). Sinon, recherche le titre traduit et ses variantes avec `python3 ${CLAUDE_PLUGIN_ROOT}/skills/recherche/scripts/search.py --lang <cible>`. Si la page existe, demande s'il faut la mettre à jour (et montre un diff).
+```bash
+mediawiki read "https://wiki.tripleperformance.fr/wiki/<Titre>" > tp-travail/<sujet>/source.wiki
+```
 
-3. **Inventorie ce qui ne se traduit pas mot à mot :**
-   - **Modèle de page et noms de paramètres** : sur les wikis non francophones, les **noms de paramètres restent en français** et seules les valeurs sont traduites (ex. sur en.tripleperformance.ag : `|Type de production=Field crops`, `|Mots-clés=Cover crops, ...`). Vérifie toujours sur un article exemple du wiki cible (`python3 ${CLAUDE_PLUGIN_ROOT}/skills/recherche/scripts/search.py --template <Nom> --lang <cible>` puis `mediawiki read`).
-   - **Valeurs de paramètres sémantiques** (type de production, objectif…) : utilise les valeurs existantes sur le wiki cible.
-   - **Liens internes** : ne les transpose pas. Remplace chaque `[[Page]]` ou `[[Page|texte]]` de la source par son texte traduit, sans lien : LinkTitles posera les liens vers les pages du wiki cible après publication (voir `conventions`). Seuls les liens structurels (images, catégories, interlangues) sont adaptés à la main.
-   - **Liens interlangues existants** : retire de la traduction la ligne `[[<cible>:...]]` de la source (une page ne pointe pas vers sa propre langue) ; les autres (`[[de:...]]`…) peuvent être conservées.
-   - **Fichiers** : les images sont-elles disponibles sur le wiki cible ? Sinon, liste-les pour téléversement (avec accord).
-   - **Espaces de noms** : `Catégorie:` → `Category:`, `Fichier:` → `File:`, etc.
-   - **Graphiques** : les sous-pages JSON appelées par `{{Graphique Triple Performance|...|json=...}}` n'existent pas sur le wiki cible. Crée-les sous le titre traduit (`<Titre traduit>/<Nom traduit>.json`), en traduisant les textes (titres, noms d'étapes et d'interventions, descriptions, axes, légendes) sans toucher aux dates, valeurs, couleurs ni `id`, et mets à jour le paramètre `json` de l'appel (skill `graphiques`). Pour un `{{#echarts:}}` en ligne, traduis les textes dans le JSON sans toucher à la structure.
+Si le titre est une redirection, travaille sur la page réelle.
 
-4. **Traduis** dans `tp-travail/<sujet>/<lang>.wiki` :
-   - titre : traduis-le en respectant les règles de titre du type de page (`conventions`, `references/titres.md`) — infinitif pour une fiche technique, nom d'action pour un retour d'expérience, nom au singulier pour un concept ; les noms de ferme et titres de livres publiés ne se traduisent pas (sauf édition existante dans la langue cible) ;
-   - vocabulaire agronomique précis et usuel dans la langue cible (ex. « couvert végétal » → *cover crop*, « méteil » → *cereal-legume mixture* / *intercrop*) ; en cas de doute sur un terme technique, garde le terme d'origine entre parenthèses ;
-   - conserve chiffres, unités et références ; adapte seulement le format des nombres (virgule/point décimal) ;
-   - noms propres (fermes, organismes, programmes) non traduits ;
-   - le paragraphe introductif (avant le premier titre) doit rester informatif dans ses 300 premiers caractères une fois traduit ; si la source n'en a pas, rédige-le et signale-le à l'utilisateur.
+### 2. Décider s'il faut traduire
 
-5. **Rapport à l'utilisateur** : images manquantes, termes incertains.
+Fais le point sur les versions existantes :
 
-6. **Validation et publication** sur le wiki cible selon `conventions`, ajout des liens par LinkTitles compris (l'utilisateur doit être connecté à ce wiki : `mediawiki login https://<cible>.tripleperformance.ag`).
+```bash
+python3 ${CLAUDE_SKILL_DIR}/scripts/interlangues.py "<URL de la page source>"
+```
 
-7. **Relie les deux versions** par des liens interlangues réciproques, placés en fin de page :
-   - dans la traduction, avant publication : `[[<langue source>:<Titre source>]]` (ex. `[[fr:Soil Tillage Intensity Rating (STIR)]]`) ;
-   - sur la page source, après publication de la traduction : ajoute `[[<cible>:<Titre traduit>]]` en fin de page, s'il n'y est pas déjà. C'est une modification de la page source : relis-la juste avant, montre le diff et publie après accord, avec un résumé du type « Ajout du lien interlangue vers la version anglaise ».
-   - Vérifie le résultat avec `python3 ${CLAUDE_PLUGIN_ROOT}/skills/recherche/scripts/search.py --langlinks` sur les deux wikis.
+Le script suit les liens interlangues de proche en proche sur tous les wikis (redirections comprises) et affiche chaque version existante. Puis, pour chaque langue cible :
 
-   Exemple existant : `Soil Tillage Intensity Rating (STIR)` (fr) porte `[[en:STIR]]`, et `STIR` (en) porte `[[fr:STIR]]`, qui est une redirection vers la page française. Les liens vers une redirection fonctionnent, mais vise de préférence le titre réel.
+1. **La source a déjà un lien vers la langue cible** : la page est déjà traduite. Arrête-toi pour cette langue, sauf si l'utilisateur demande une retraduction ou une mise à jour. Dans ce cas, **garde exactement le titre cible existant** (ne le retraduis pas, sinon tu crées un doublon), lis la page cible et prépare un `diff -u`.
+2. **Pas de lien, mais la page existe déjà sur le wiki cible** sous le titre traduit ou une variante. Cherche-la avec `python3 ${CLAUDE_PLUGIN_ROOT}/skills/recherche/scripts/search.py --exists "<Titre traduit>" --lang <cible>`, puis avec `search.py "<mots du titre>" --lang <cible>`. Ne traduis pas : propose seulement de relier les pages (étape 8). Si son contenu est très en retard sur la source, signale-le et demande s'il faut la mettre à jour.
+3. **Aucune version** : traduis (étapes 3 à 8).
+
+Le script signale aussi les liens vers des pages absentes et les **conflits** (deux pages différentes pour une même langue). Montre-les à l'utilisateur et demande laquelle garder avant toute modification.
+
+### 3. Inventorier ce qui ne se traduit pas mot à mot
+
+- **Modèle de page et paramètres** : noms de modèles et de paramètres inchangés (en français sur tous les wikis), valeurs traduites sauf les paramètres protégés (`Image`, `Icone`, `Logo`, `Bannière`, `query`, `class`… liste complète dans la référence). Vérifie sur un article du wiki cible qui utilise le même modèle (`python3 ${CLAUDE_PLUGIN_ROOT}/skills/recherche/scripts/search.py --template <Nom> --lang <cible>` puis `mediawiki read`).
+- **Valeurs sémantiques** (type de production, objectif…) : reprends les valeurs déjà employées sur le wiki cible.
+- **Liens internes** : ne les transpose pas. Remplace chaque `[[Page]]` ou `[[Page|texte]]` par son texte traduit, sans lien, en gardant les espaces autour. LinkTitles posera les liens du wiki cible après publication (voir `conventions`). Seuls les liens structurels sont adaptés à la main : images, catégories, interlangues.
+- **Espaces de noms**, y compris dans le corps du texte : `Catégorie:` → `Category:`, `Fichier:` → `File:`, etc. Les catégories visées doivent exister sur le wiki cible.
+- **Fichiers** : noms inchangés, légendes traduites. Vérifie qu'ils sont disponibles sur le wiki cible ; sinon, liste-les pour téléversement (avec accord).
+- **Sous-pages JSON** : repère chaque paramètre `json=`, quel que soit le modèle. Note le chemin source et choisis le chemin cible `<Titre traduit>/<Nom traduit>.json` (traitement à l'étape 5).
+- **Liens interlangues de la source** : ne les recopie pas tels quels ; le bon bloc est calculé à l'étape 7.
+
+### 4. Traduire
+
+Dans `tp-travail/<sujet>/<lang>.wiki` :
+
+- **Titre** : traduis-le selon les règles de titre du type de page (`conventions`, `references/titres.md`) : infinitif pour une fiche technique, nom d'action pour un retour d'expérience, nom au singulier pour un concept. Les noms de ferme et les titres de livres publiés ne se traduisent pas, sauf s'il existe une édition dans la langue cible. Un `:` dans le titre n'est un espace de noms que si le préfixe en est un vrai. Propose le titre à l'utilisateur.
+- **Vocabulaire** agronomique précis et usuel dans la langue cible (« couvert végétal » → *cover crop*, « méteil » → *cereal-legume mixture* / *intercrop*). En cas de doute sur un terme technique, garde le terme d'origine entre parenthèses.
+- **Chiffres, unités et références** : conservés ; adapte seulement le format des nombres (virgule ou point décimal).
+- **Noms propres** (fermes, organismes, programmes) : non traduits.
+- **Paragraphe introductif** (avant le premier titre) : il doit rester informatif dans ses 300 premiers caractères une fois traduit. Si la source n'en a pas, rédige-le et signale-le.
+- **Page longue** : traduis section par section, sans en sauter ni en fusionner, et sans rien ajouter qui ne soit dans la source.
+- Laisse la valeur `json=` d'origine pour l'instant ; elle est remplacée à l'étape 5.
+
+### 5. Traduire les sous-pages JSON
+
+Pour chaque `json=` relevé :
+
+```bash
+mediawiki read "<base source>/wiki/<Page>/<Nom>.json" > tp-travail/<sujet>/<nom>.source.json
+# … traduction des seules valeurs texte dans tp-travail/<sujet>/<nom>.<lang>.json
+python3 ${CLAUDE_SKILL_DIR}/scripts/verifier.py --json tp-travail/<sujet>/<nom>.source.json tp-travail/<sujet>/<nom>.<lang>.json
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/graphiques/scripts/graphique.py verifie tp-travail/<sujet>/<nom>.<lang>.json
+```
+
+Ne traduis que les valeurs texte : pas les clés, nombres, dates, couleurs ni `id` (détails dans la référence). Puis remplace, dans `<lang>.wiki`, la valeur `json=` par le chemin cible exact. Pour un `{{#echarts:}}` en ligne, traduis les textes du JSON sans toucher à la structure.
+
+### 6. Vérifier la traduction
+
+```bash
+python3 ${CLAUDE_SKILL_DIR}/scripts/verifier.py tp-travail/<sujet>/source.wiki tp-travail/<sujet>/<lang>.wiki --lang <lang> --source-lang <source>
+```
+
+Le script compare la source et la traduction. Il vérifie que les modèles, les noms de paramètres et les valeurs protégées sont identiques, que les fichiers, références, tableaux, galeries et titres de section sont tous là, et que `{{ }}` et `[[ ]]` sont équilibrés. Il repère aussi les sous-pages JSON, les liens `[[:xx:…]]`, les espaces de noms restés en français, les liens internes restants, les espaces collés aux liens, et une longueur suspecte (texte oublié ou inventé). Il faut zéro erreur (code de sortie 1 sinon). Corrige les avertissements, ou explique à l'utilisateur pourquoi tu les laisses. Puis lance l'aperçu de `conventions` (`preview.py --lang <lang>`).
+
+### 7. Rapport, validation et publication
+
+Avant de publier, ajoute en fin de page le bloc interlangue complet. Pour une page pas encore publiée, le script le donne :
+
+```bash
+python3 ${CLAUDE_SKILL_DIR}/scripts/interlangues.py "<URL de la page source>" --ajoute <lang>:"<Titre traduit>"
+```
+
+Le bloc contient le lien vers la source **et** vers toutes les autres versions existantes (`[[de:…]]`, `[[es:…]]`…), jamais vers sa propre langue, toujours sous la forme `[[xx:Titre]]` (sans `:` initial).
+
+Signale ensuite à l'utilisateur les images manquantes, les termes incertains, l'introduction rédigée et les sous-pages JSON à créer. Publie selon `conventions` : sous-pages JSON d'abord (`mediawiki write --content-model=json`), puis la page, puis LinkTitles. L'utilisateur doit être connecté au wiki cible : `mediawiki login https://<cible>.tripleperformance.ag`.
+
+### 8. Relier toutes les versions
+
+Une fois la traduction publiée (ou pour une page existante simplement à relier, cas 2 de l'étape 2), chaque version du groupe doit porter les liens vers toutes les autres :
+
+```bash
+python3 ${CLAUDE_SKILL_DIR}/scripts/interlangues.py "<URL de la page source>" --ajoute <lang>:"<Titre traduit>" --sortie tp-travail/<sujet>/interlangues
+```
+
+Pour chaque page à corriger (source, mais aussi les versions dans d'autres langues), le script écrit `<lang>.avant.wiki` et `<lang>.apres.wiki`. Il remplace un lien existant vers la même langue au lieu d'en ajouter un second, et retire les liens vers des pages absentes. Les titres visés sont les titres réels, pas les redirections. Montre les `diff -u` proposés et attends l'accord, puis publie chaque page avec un résumé du type « Ajout du lien interlangue vers la version anglaise » :
+
+```bash
+mediawiki write "<base de la langue>/wiki/<Titre>" tp-travail/<sujet>/interlangues/<lang>.apres.wiki --summary "..."
+```
+
+Ces pages n'ont pas de texte nouveau : ne relance pas LinkTitles. Le script ne fait que lire ; relance-le juste avant d'écrire si du temps a passé, puis une dernière fois à la fin : il doit afficher « Tous les liens interlangues sont à jour ».
+
+Exemple existant : `Soil Tillage Intensity Rating (STIR)` (fr) porte `[[en:STIR]]`, et `STIR` (en) porte `[[fr:STIR]]`, qui est une redirection vers la page française. Le script propose de viser le titre réel.
+
+## Traduire vers plusieurs langues
+
+Traduis une langue après l'autre (étapes 2 à 7), chacune dans son fichier `tp-travail/<sujet>/<lang>.wiki`, en partant toujours de la source et non d'une autre traduction. Fais valider le titre de chaque langue. Fais ensuite l'étape 8 une seule fois pour tout le groupe, en passant un `--ajoute` par langue publiée : une seule modification par page au lieu d'une par langue.
+
+## Tester sur le wiki de développement
+
+Pour essayer sans toucher à la production, utilise les wikis `https://<lang>.dev.tripleperformance.ag` (français : `fr.dev.tripleperformance.ag`), aux certificats auto-signés, s'ils sont accessibles depuis ton poste (demande à l'utilisateur). `interlangues.py --dev` interroge ces wikis. N'écris jamais en production pour un test (voir `conventions`).
 
 ## À préciser
 

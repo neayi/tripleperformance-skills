@@ -2,6 +2,18 @@
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage [sémantique](https://semver.org/lang/fr/).
 
+## Non publié
+
+### Ajouté
+
+- `traduction` : script `verifier.py`, qui compare une page source et sa traduction (modèles, paramètres, valeurs protégées, fichiers, références, liens interlangues, espaces de noms, longueur) ou deux sous-pages JSON (structure, nombres, dates, couleurs, `id`).
+- `traduction` : script `interlangues.py` (lecture seule), qui reconstitue toutes les versions linguistiques d'une page, signale conflits et liens vers des pages absentes, et prépare pour chaque page le wikitext corrigé à montrer en diff.
+- `traduction` : référence `parametres-proteges.md` (paramètres dont la valeur ne se traduit pas, sous-pages JSON, pièges observés), reprise de l'outil `gpt_wiki_translator`.
+
+### Modifié
+
+- `traduction` : décision avant de traduire (déjà traduite, page cible existante à relier seulement, retraduction sous le titre existant), sous-pages JSON pour tout paramètre `json=`, vérification avant publication, liens interlangues propagés à toutes les versions, traduction vers plusieurs langues, wikis de développement.
+
 ## 0.2.4 - 2026-11-12
 
 ### Ajouté
