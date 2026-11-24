@@ -76,7 +76,9 @@ Après `wikitable`, on peut ajouter dans `class="..."` des classes qui rendent l
 | `small` | réduit la taille du texte |
 | `sortable` | permet de trier en cliquant sur les en-têtes |
 
-Par défaut, utilise seulement `class="wikitable table-responsive"`. Ajoute les autres classes selon le besoin du tableau :
+Par défaut, utilise seulement `class="wikitable"`. Ajoute les autres classes selon le besoin du tableau :
+
+- `table-responsive` seulement pour un tableau vraiment large, de plus de 10 colonnes ;
 
 - `table` quand des cellules ont des textes de longueurs très différentes (contenu aligné en haut plutôt qu'au milieu) ;
 - `table-striped` pour un tableau de nombreuses lignes, où l'œil doit suivre une ligne ;
@@ -86,7 +88,7 @@ Par défaut, utilise seulement `class="wikitable table-responsive"`. Ajoute les 
 Exemple combinant plusieurs classes :
 
 ```
-{| class="wikitable table table-striped table-sm table-responsive small"
+{| class="wikitable table table-striped table-sm small"
 ```
 
 ## Graphiques

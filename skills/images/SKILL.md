@@ -106,12 +106,14 @@ Au centre, sans habillage et sans cadre, quand il n'y a pas de légende.
 Plusieurs images à la suite : utilise une galerie plutôt qu'une série d'images.
 
 ```
-<gallery mode="slideshow" showthumbnails>
+<noautolinks><gallery mode="slideshow" showthumbnails>
 File:Nom image 1.jpg|Légende de la première image
 File:Nom image 2.jpg|Légende de la deuxième image
 File:Nom image 3.png|Légende de la troisième image
-</gallery>
+</gallery></noautolinks>
 ```
+
+Entoure toujours la galerie de `<noautolinks>` : sinon LinkTitles pose des liens à l'intérieur des noms de fichiers (`Les [[Serres de Marcel]].jpg`) et casse les images.
 
 Rappels : pas d'image avant le paragraphe introductif (voir `conventions`) ; une légende décrit ce qu'on voit, elle ne répète pas le titre de la section.
 

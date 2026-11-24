@@ -2,6 +2,17 @@
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage [sémantique](https://semver.org/lang/fr/).
 
+## Non publié
+
+### Ajouté
+
+- `nouvel-article` : paramètres du modèle Contributeur et lien entre `Nom de l'agriculteur` et la page `Utilisateur:`.
+
+### Modifié
+
+- `images`, `conventions` : galeries entourées de `<noautolinks>`, LinkTitles posant sinon des liens dans les noms de fichiers.
+- Tableaux (`conventions`, `tableau-depuis-image`) : classe par défaut `wikitable` seule ; `table-responsive` réservée aux tableaux de plus de 10 colonnes.
+
 ## 0.3.0 - 2026-11-24
 
 ### Ajouté

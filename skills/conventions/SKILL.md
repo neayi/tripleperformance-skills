@@ -98,7 +98,7 @@ Le titre suit des règles propres à chaque type de page (nom d'action pour un r
 
    La CLI se charge du jeton et du POST ; l'utilisateur doit être connecté. Montre les liens ajoutés à l'utilisateur. Si l'un d'eux est hors sujet (homonyme, lien dans une citation), propose de le retirer : c'est une nouvelle modification, à faire valider comme les autres. Si la page cible est un homonyme courant (ex. `Verse`, `Rouille`, `Test`), propose aussi d'ajouter `__NOAUTOLINKTARGET__` en fin de page cible (redirections comprises) pour que LinkTitles ne la vise plus ; l'API `prop=pageprops` doit alors renvoyer `MAG_LINKTITLES_NOTARGET`.
 
-   Pour qu'un passage ne reçoive jamais de liens (ex. un terme coupé en deux liens, `[[Limon]] [[argileux]]`), entoure-le de `<noautolinks>...</noautolinks>` : retirer le lien ne suffit pas, LinkTitles le repose au passage suivant. Relancé sur une page déjà traitée, LinkTitles peut ajouter un second lien vers une page déjà reliée (ex. deux fois `cultures` dans le même paragraphe) : signale-le, sans relancer en boucle.
+   Pour qu'un passage ne reçoive jamais de liens (ex. un terme coupé en deux liens, `[[Limon]] [[argileux]]`), entoure-le de `<noautolinks>...</noautolinks>` : retirer le lien ne suffit pas, LinkTitles le repose au passage suivant. Relancé sur une page déjà traitée, LinkTitles peut ajouter un second lien vers une page déjà reliée (ex. deux fois `cultures` dans le même paragraphe) : signale-le, sans relancer en boucle. LinkTitles modifie aussi les noms de fichiers dans les `<gallery>` : entoure chaque galerie de `<noautolinks>` (voir la skill `images`) et vérifie dans le diff qu'aucun nom de fichier n'a changé.
 
 ## Améliorer cette skill
 
