@@ -52,6 +52,9 @@ Le script signale aussi les liens vers des pages absentes et les **conflits** (d
 Dans `tp-travail/<sujet>/<lang>.wiki` :
 
 - **Titre** : traduis-le selon les règles de titre du type de page (`conventions`, `references/titres.md`) : infinitif pour une fiche technique, nom d'action pour un retour d'expérience, nom au singulier pour un concept. Les noms de ferme et les titres de livres publiés ne se traduisent pas, sauf s'il existe une édition dans la langue cible. Un `:` dans le titre n'est un espace de noms que si le préfixe en est un vrai. Propose le titre à l'utilisateur.
+  - Traduis **tout** le titre, y compris après un « : » (erreur fréquente sur le wiki anglais : `Robot de traite :questions that arise…`). Le titre anglais prend « : » sans espace avant.
+  - Méfie-toi des homonymes : « Taille » → *Pruning* (pas *Size*), « Verse » → *Lodging* (pas *Payment*), « Gel » → *Frost*, « Élevage » → *Livestock farming* (pas *Breeding*), « Buses » → *Nozzles*, « Bineuse » → *Hoe*, « Battance » → *Soil crusting*, « Circuits courts » → *Short supply chains*, « Moha » → *Foxtail millet*, « Rue » (plante) → *Rue (plant)*.
+- **Liens internes** : la cible d'un lien conservé doit être le **titre réel de la page dans la langue cible** (lien interlangue de la cible française, ou `search.py --exists`), jamais une traduction libre du titre français ; le texte affiché, lui, se traduit. Pour un pluriel, écris `[[pea]]s` (cible *Pea*, affiche *peas*) plutôt que `[[Pea|peas]]`.
 - **Vocabulaire** agronomique précis et usuel dans la langue cible (« couvert végétal » → *cover crop*, « méteil » → *cereal-legume mixture* / *intercrop*). En cas de doute sur un terme technique, garde le terme d'origine entre parenthèses.
 - **Chiffres, unités et références** : conservés ; adapte seulement le format des nombres (virgule ou point décimal).
 - **Noms propres** (fermes, organismes, programmes) : non traduits.

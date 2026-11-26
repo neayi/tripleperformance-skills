@@ -2,7 +2,14 @@
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versionnage [sémantique](https://semver.org/lang/fr/).
 
-## Non publié
+## 0.3.2 - 2026-11-26
+
+### Modifié
+
+- `images` : les images de Wikimedia Commons s'affichent sans téléversement (InstantCommons).
+- `conventions` : LinkTitles casse les noms de références (`<ref name="...">`) ; les vérifier après son passage.
+- `graphiques` : gabarit de courbe de levée d'adventice (`type = Courbe de levée`).
+- `traduction` : traduire tout le titre (y compris après « : »), liste d'homonymes mal traduits (Taille, Verse, Gel, Élevage…) et cible des liens = titre réel dans la langue cible, avec la syntaxe `[[pea]]s` pour les pluriels.
 
 ## 0.3.1 - 2026-11-24
 

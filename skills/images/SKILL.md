@@ -117,6 +117,10 @@ Entoure toujours la galerie de `<noautolinks>` : sinon LinkTitles pose des liens
 
 Rappels : pas d'image avant le paragraphe introductif (voir `conventions`) ; une légende décrit ce qu'on voit, elle ne répète pas le titre de la section.
 
+### Images de Wikimedia Commons
+
+Le wiki français a InstantCommons : un fichier de Wikimedia Commons s'affiche directement avec son nom Commons (`[[Fichier:Apera in Secale.jpg|thumb|…]]`, ou `Image = Apera in Secale.jpg` dans le modèle), sans téléversement. `search.py --exists` le donne absent (pas de page locale), mais `preview.py` le rend sans lien rouge. Choisis une image sous licence libre (CC BY, CC BY-SA, domaine public) et cite l'auteur et la licence dans la légende ou `ImageCaption`. Liste les images d'une espèce avec l'API de Commons (`generator=categorymembers&gcmtitle=Category:<Nom latin>&prop=imageinfo&iiprop=url|extmetadata`).
+
 ## 6. Téléversement
 
 Après accord explicite de l'utilisateur, et seulement s'il a le droit de publier les images (demande-lui la source, l'auteur et la licence) :

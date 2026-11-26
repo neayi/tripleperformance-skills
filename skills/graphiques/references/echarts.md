@@ -148,6 +148,24 @@ Convention de Gaussen : l'échelle des précipitations vaut le double de celle d
 }
 ```
 
+### Courbe de levée d'une adventice — `type = Courbe de levée`
+
+Pourcentage des levées annuelles par décade (36 décades, du 1er janvier au 17 décembre), en aire lissée. Sous-page `<Adventice>/Courbe de levée.json`. Axe des abscisses en catégories plutôt qu'en `type: "time"` : l'extension n'a pas de locale française, un axe de temps afficherait « Jan, Feb… ».
+
+```json
+{
+  "title": { "text": "Courbe de levée – Vulpin des champs", "left": "center", "textStyle": { "fontSize": 14 } },
+  "tooltip": { "trigger": "axis", "formatter": "Décade du {b0} : {c0} % des levées de l'année" },
+  "grid": { "left": 10, "right": 20, "top": 60, "bottom": 10, "containLabel": true },
+  "xAxis": { "type": "category", "boundaryGap": false, "axisLabel": { "interval": 2 },
+             "data": ["01 janv.", "11 janv.", "21 janv.", "…", "17 déc."] },
+  "yAxis": { "type": "value", "name": "% de levée par décade", "min": 0, "axisLabel": { "formatter": "{value} %" } },
+  "series": [{ "type": "line", "name": "Levée", "smooth": true, "symbol": "none",
+               "lineStyle": { "width": 3, "color": "#4c9a2a" }, "itemStyle": { "color": "#4c9a2a" },
+               "areaStyle": { "color": "#4c9a2a", "opacity": 0.25 }, "data": [0, 1.26, 1.26, "…", 0] }]
+}
+```
+
 ### Courbes, deux axes, nuage de points
 
 Partir des [exemples d'ECharts](https://echarts.apache.org/examples/en/index.html), en n'y gardant que l'objet `option` traduit en JSON strict. Ajoute toujours `tooltip`, une `legend` s'il y a plusieurs séries, et les unités dans `name` des axes ou dans `axisLabel.formatter`.
